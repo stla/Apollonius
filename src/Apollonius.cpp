@@ -27,7 +27,7 @@ typedef ApolloniusGraph::Site_2                             Site2;
 //typedef Triangulation::Vertex_handle                        Vertex_handle;
 
 // [[Rcpp::export]]
-Rcpp::IntegerMatrix test() {
+Rcpp::List test() {
 
   Point2 p1(0, 0);
   Point2 p2(4, 1);
@@ -57,6 +57,10 @@ Rcpp::IntegerMatrix test() {
   int nfaces = n - 1;
 
   Rcpp::IntegerMatrix Neighbors(nfaces, 3);
+  Rcpp::IntegerMatrix CommonVertex1(nfaces, 3);
+  Rcpp::IntegerMatrix CommonVertex2(nfaces, 3);
+  Rcpp::NumericMatrix DualPoints(nfaces, 2);
+  Rcpp::List Vertices(nfaces);
 
   int fid = 0;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
@@ -64,6 +68,17 @@ Rcpp::IntegerMatrix test() {
     Rcpp::Rcout << "v1: " << f->vertex(0)->site() << "\n";
     Rcpp::Rcout << "v2: " << f->vertex(1)->site() << "\n";
     Rcpp::Rcout << "v3: " << f->vertex(2)->site() << "\n";
+    Rcpp::NumericMatrix VS(3, 3);
+    VS(0, 0) = f->vertex(0)->site().point().x();
+    VS(0, 1) = f->vertex(0)->site().point().y();
+    VS(0, 2) = f->vertex(0)->site().weight();
+    VS(1, 0) = f->vertex(1)->site().point().x();
+    VS(1, 1) = f->vertex(1)->site().point().y();
+    VS(1, 2) = f->vertex(1)->site().weight();
+    VS(2, 0) = f->vertex(2)->site().point().x();
+    VS(2, 1) = f->vertex(2)->site().point().y();
+    VS(2, 2) = f->vertex(2)->site().weight();
+    Vertices(fid) = VS;
     Rcpp::Rcout << "face id: ";
     Rcpp::Rcout << f->info() << "\n";
     Rcpp::IntegerVector neighbors(3);
@@ -74,7 +89,7 @@ Rcpp::IntegerMatrix test() {
         neighbors(i) = f->neighbor(i)->info();
       }
     }
-    Neighbors(fid++, Rcpp::_) = neighbors;
+    Neighbors(fid, Rcpp::_) = neighbors;
 
     for(int j = 0; j < 3; j++) {
       if(!ag.is_infinite(f->neighbor(j))) {
@@ -89,11 +104,24 @@ Rcpp::IntegerMatrix test() {
         }
         Rcpp::Rcout << "common vertices: "
                     << commonVertices[0] << ", " << commonVertices[1] << "\n";
+        CommonVertex1(fid, j) = commonVertices[0];
+        CommonVertex2(fid, j) = commonVertices[1];
       }
     }
     Rcpp::Rcout << "face dual:\n";
     Rcpp::Rcout << ag.dual(f) << "\n";
+    Site2 site = ag.dual(f);
+    Point2 pt = site.point();
+    DualPoints(fid, 0) = pt.x();
+    DualPoints(fid, 1) = pt.y();
+    fid++;
   }
 
-  return Neighbors;
+  return Rcpp::List::create(
+    Rcpp::Named("vertices")  = Vertices,
+    Rcpp::Named("neighbors") = Neighbors,
+    Rcpp::Named("cvertex1")  = CommonVertex1,
+    Rcpp::Named("cvertex2")  = CommonVertex2,
+    Rcpp::Named("dpoints")   = DualPoints
+  );
 }

@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // test
-Rcpp::IntegerMatrix test();
+Rcpp::List test();
 RcppExport SEXP _Apollonius_test() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
