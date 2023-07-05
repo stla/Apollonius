@@ -27,7 +27,7 @@ typedef ApolloniusGraph::Site_2                             Site2;
 //typedef Triangulation::Vertex_handle                        Vertex_handle;
 
 // [[Rcpp::export]]
-void test() {
+Rcpp::IntegerMatrix test() {
 
   Point2 p1(0, 0);
   Point2 p2(4, 1);
@@ -50,35 +50,50 @@ void test() {
   // validate the Apollonius graph
   assert(ag.is_valid(true, 1));
 
-  int i = 0;
+  int n = 1;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
-    f->info() = i++;
+    f->info() = n++;
   }
+  int nfaces = n - 1;
 
+  Rcpp::IntegerMatrix Neighbors(nfaces, 3);
+
+  int fid = 0;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
     Rcpp::Rcout << "\nface vertices:\n";
     Rcpp::Rcout << "v1: " << f->vertex(0)->site() << "\n";
     Rcpp::Rcout << "v2: " << f->vertex(1)->site() << "\n";
     Rcpp::Rcout << "v3: " << f->vertex(2)->site() << "\n";
-    Rcpp::Rcout << "face id:\n";
+    Rcpp::Rcout << "face id: ";
     Rcpp::Rcout << f->info() << "\n";
-    Rcpp::Rcout << "face neighbor 0:\n";
-    Rcpp::Rcout << f->neighbor(0)->info() << "\n";
-    Rcpp::Rcout << "is infinite? " << ag.is_infinite(f->neighbor(0)) << "\n";
-    std::vector<int> commonVertices;
-    commonVertices.reserve(2);
-    for(int k = 0; k < 3; k++) {
-      if(f->neighbor(0)->has_vertex(f->vertex(k))) {
-        commonVertices.emplace_back(k+1);
+    Rcpp::IntegerVector neighbors(3);
+    for(int i = 0; i < 3; i++) {
+      if(ag.is_infinite(f->neighbor(i))) {
+        neighbors(i) = Rcpp::IntegerVector::get_na();
+      } else {
+        neighbors(i) = f->neighbor(i)->info();
       }
     }
-    Rcpp::Rcout << "common vertices: " << commonVertices[0] << ", " << commonVertices[1] << "\n";
-    // Rcpp::Rcout << "face neighbor 1:\n";
-    // Rcpp::Rcout << f->neighbor(1)->info() << "\n";
-    // Rcpp::Rcout << "face neighbor 2:\n";
-    // Rcpp::Rcout << f->neighbor(2)->info() << "\n";
+    Neighbors(fid++, Rcpp::_) = neighbors;
+
+    for(int j = 0; j < 3; j++) {
+      if(!ag.is_infinite(f->neighbor(j))) {
+        Rcpp::Rcout << "face neighbor " << j+1 << ": ";
+        Rcpp::Rcout << f->neighbor(j)->info() << "\n";
+        std::vector<int> commonVertices;
+        commonVertices.reserve(2);
+        for(int k = 0; k < 3; k++) {
+          if(f->neighbor(j)->has_vertex(f->vertex(k))) {
+            commonVertices.emplace_back(k+1);
+          }
+        }
+        Rcpp::Rcout << "common vertices: "
+                    << commonVertices[0] << ", " << commonVertices[1] << "\n";
+      }
+    }
     Rcpp::Rcout << "face dual:\n";
     Rcpp::Rcout << ag.dual(f) << "\n";
   }
 
+  return Neighbors;
 }
