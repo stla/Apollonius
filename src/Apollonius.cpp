@@ -22,17 +22,20 @@ void test() {
   Point2 p2(4, 1);
   Point2 p3(2, 4);
   Point2 p4(7, 4);
+  Point2 p5(8, 0);
 
   Site2 s1(p1, 1);
   Site2 s2(p2, 1.5);
   Site2 s3(p3, 1);
-  Site2 s4(p4, 1);
+  Site2 s4(p4, 2);
+  Site2 s5(p5, 1);
 
   ApolloniusGraph ag;
   ag.insert(s1);
   ag.insert(s2);
   ag.insert(s3);
   ag.insert(s4);
+  ag.insert(s5);
   // validate the Apollonius graph
   assert(ag.is_valid(true, 1));
 
