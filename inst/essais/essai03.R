@@ -8,9 +8,12 @@ p4 <- c(7, 4)
 p5 <- c(8, 0)
 p6 <- c(5, -2)
 p7 <- c(-4, 4)
+p8 <- c(-2, -1)
+p9 <- c(11, 4)
+p10 <- c(11, 0)
 
-sites <- rbind(p1, p2, p3, p4, p5, p6, p7)
-radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4)
+sites <- rbind(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
+radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
 
 clrs <- randomcoloR::distinctColorPalette(nrow(sites))
 
@@ -79,43 +82,3 @@ for(i in 1L:nrow(dpoints)) {
     lines(hseg, col="black", lwd = 2)
   }
 }
-
-i <- 6L
-P1 <- dpoints[i, ]
-vs <- c(1L, 2L)
-A <- vertices[[i]][vs[1L], 1L:2L]
-rA <- vertices[[i]][vs[1L], 3L]
-B <- vertices[[i]][vs[2L], 1L:2L]
-rB <- vertices[[i]][vs[2L], 3L]
-ctr <- (A + B)/2
-P2 <- dpoints[1L, ]
-f <- function(s) {
-  d <- ctr + gyromidpoint(P1-ctr, P2-ctr, s)
-  Ad <- d - A
-  Bd <- d - B
-  sqrt(c(crossprod(Ad))) - sqrt(c(crossprod(Bd))) - (rA - rB)
-}
-ur <- uniroot(f, lower = 0.001, upper = 15)
-s <- ur$root
-hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
-lines(hseg, col="black", lwd = 2)
-
-i <- 2L
-P1 <- dpoints[i, ]
-vs <- c(1L, 3L)
-A <- vertices[[i]][vs[1L], 1L:2L]
-rA <- vertices[[i]][vs[1L], 3L]
-B <- vertices[[i]][vs[2L], 1L:2L]
-rB <- vertices[[i]][vs[2L], 3L]
-ctr <- (A + B)/2
-P2 <- dpoints[5L, ]
-f <- function(s) {
-  d <- ctr + gyromidpoint(P1-ctr, P2-ctr, s)
-  Ad <- d - A
-  Bd <- d - B
-  sqrt(c(crossprod(Ad))) - sqrt(c(crossprod(Bd))) - (rA - rB)
-}
-ur <- uniroot(f, lower = 0.001, upper = 15)
-s <- ur$root
-hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
-lines(hseg, col="black", lwd = 2)
