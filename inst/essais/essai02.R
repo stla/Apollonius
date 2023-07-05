@@ -11,13 +11,16 @@ p6 <- c(5, -2)
 sites <- rbind(p1, p2, p3, p4, p5, p6)
 radii <- c(1, 1.5, 1, 2, 1, 0.5)
 
+clrs <- randomcoloR::distinctColorPalette(nrow(sites))
+
+opar <- par(mar = c(3, 3, 1, 1))
 plot(NULL, xlim = c(-1, 10), ylim = c(-3, 6), asp = 1, xlab = "x", ylab = "y")
-draw.circle(p1[1L], p1[2L], radius = 1, border = "red")
-draw.circle(p2[1L], p2[2L], radius = 1.5, border = "green")
-draw.circle(p3[1L], p3[2L], radius = 1, border = "blue")
-draw.circle(p4[1L], p4[2L], radius = 2, border = "gray")
-draw.circle(p5[1L], p5[2L], radius = 1, border = "yellow")
-draw.circle(p6[1L], p6[2L], radius = 0.5, border = "maroon")
+for(i in 1L:nrow(sites)) {
+  draw.circle(
+    sites[i, 1L], sites[i, 2L], radius = radii[i],
+    border = clrs[i], lwd = 4
+  )
+}
 
 stuff <- Apollonius:::test(sites, radii)
 
@@ -64,7 +67,7 @@ ur <- uniroot(f, lower = 0.01, upper = 5)
 s <- ur$root
 #points(rbind(ctr), col = "blue", pch = 19)
 hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
-lines(hseg, col="black")
+lines(hseg, col="black", lwd = 2)
 
 
 for(i in 2L:nrow(dpoints)) {
@@ -85,5 +88,5 @@ for(i in 2L:nrow(dpoints)) {
   ur <- uniroot(f, lower = 0.01, upper = 5)
   s <- ur$root
   hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
-  lines(hseg, col="black")
+  lines(hseg, col="black", lwd = 2)
 }
