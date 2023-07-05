@@ -7,7 +7,7 @@ p3 <- c(2, 4)
 p4 <- c(7, 4)
 p5 <- c(8, 0)
 
-plot(NULL, xlim = c(-3, 6), ylim = c(-3, 6), asp = 1)
+plot(NULL, xlim = c(-1, 10), ylim = c(-3, 6), asp = 1, xlab = "x", ylab = "y")
 draw.circle(p1[1L], p1[2L], radius = 1, border = "red")
 draw.circle(p2[1L], p2[2L], radius = 1.5, border = "green")
 draw.circle(p3[1L], p3[2L], radius = 1, border = "blue")
