@@ -1,15 +1,15 @@
 library(plotrix)
 library(gyro)
 
-p1 <- c(0, 0)
-p2 <- c(4, 1)
-p3 <- c(2, 4)
-p4 <- c(7, 4)
-p5 <- c(8, 0)
-p6 <- c(5, -2)
-p7 <- c(-4, 4)
-p8 <- c(-2, -1)
-p9 <- c(11, 4)
+p1  <- c(0, 0)
+p2  <- c(4, 1)
+p3  <- c(2, 4)
+p4  <- c(7, 4)
+p5  <- c(8, 0)
+p6  <- c(5, -2)
+p7  <- c(-4, 4)
+p8  <- c(-2, -1)
+p9  <- c(11, 4)
 p10 <- c(11, 0)
 
 sites <- rbind(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
@@ -27,9 +27,6 @@ for(i in 1L:nrow(sites)) {
 }
 
 stuff <- Apollonius:::test(sites, radii)
-
-vertices <- stuff[["vertices"]]
-
 neighbors <- stuff[["neighbors"]]
 
 Neighs <- vector("list", nrow(neighbors))
@@ -54,6 +51,7 @@ commonVertices <-
 commonVertices[1, 3, ] # common vertices face1 with its neighbor 3
 
 dpoints <- stuff[["dpoints"]]
+vertices <- stuff[["vertices"]]
 
 points(dpoints, pch = 19)
 

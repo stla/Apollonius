@@ -6,11 +6,8 @@
 #include <CGAL/Apollonius_graph_traits_2.h>
 #include <CGAL/Apollonius_graph_vertex_base_2.h>
 //#include <CGAL/Triangulation_2.h>
-#include <CGAL/Triangulation_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
 //#include <CGAL/Triangulation_vertex_base_with_info_2.h>
-
-
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_2                                          Point2;
@@ -23,8 +20,8 @@ typedef CGAL::Triangulation_data_structure_2<Vb, Fb>        Tds;
 typedef CGAL::Apollonius_graph_2<Traits, Tds>               ApolloniusGraph;
 typedef ApolloniusGraph::Site_2                             Site2;
 //typedef ApolloniusGraph::Triangulation_data_structure       Tds;
-//typedef CGAL::Triangulation_2<K,Tds>                        Triangulation;
 //typedef Triangulation::Vertex_handle                        Vertex_handle;
+
 
 // [[Rcpp::export]]
 Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
@@ -43,7 +40,7 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
     f->info() = n++;
   }
-  int nfaces = n - 1;
+  const int nfaces = n - 1;
 
   Rcpp::IntegerMatrix Neighbors(nfaces, 3);
   Rcpp::IntegerMatrix CommonVertex1(nfaces, 3);
