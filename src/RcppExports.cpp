@@ -12,18 +12,20 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // test
-Rcpp::List test();
-RcppExport SEXP _Apollonius_test() {
+Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii);
+RcppExport SEXP _Apollonius_test(SEXP sitesSEXP, SEXP radiiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(test());
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type sites(sitesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type radii(radiiSEXP);
+    rcpp_result_gen = Rcpp::wrap(test(sites, radii));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Apollonius_test", (DL_FUNC) &_Apollonius_test, 0},
+    {"_Apollonius_test", (DL_FUNC) &_Apollonius_test, 2},
     {NULL, NULL, 0}
 };
 

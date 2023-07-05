@@ -27,26 +27,15 @@ typedef ApolloniusGraph::Site_2                             Site2;
 //typedef Triangulation::Vertex_handle                        Vertex_handle;
 
 // [[Rcpp::export]]
-Rcpp::List test() {
+Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
 
-  Point2 p1(0, 0);
-  Point2 p2(4, 1);
-  Point2 p3(2, 4);
-  Point2 p4(7, 4);
-  Point2 p5(8, 0);
-
-  Site2 s1(p1, 1);
-  Site2 s2(p2, 1.5);
-  Site2 s3(p3, 1);
-  Site2 s4(p4, 2);
-  Site2 s5(p5, 1);
-
+  const int nsites = sites.nrow();
   ApolloniusGraph ag;
-  ag.insert(s1);
-  ag.insert(s2);
-  ag.insert(s3);
-  ag.insert(s4);
-  ag.insert(s5);
+  for(int i = 0; i < nsites; i++) {
+    Point2 p(sites(i, 0), sites(i, 1));
+    Site2  s(p, radii(i));
+    ag.insert(s);
+  }
   // validate the Apollonius graph
   assert(ag.is_valid(true, 1));
 

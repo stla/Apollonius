@@ -6,9 +6,10 @@ p2 <- c(4, 1)
 p3 <- c(2, 4)
 p4 <- c(7, 4)
 p5 <- c(8, 0)
+p6 <- c(5, -2)
 
-sites <- rbind(p1, p2, p3, p4, p5)
-radii <- c(1, 1.5, 1, 2, 1)
+sites <- rbind(p1, p2, p3, p4, p5, p6)
+radii <- c(1, 1.5, 1, 2, 1, 0.5)
 
 plot(NULL, xlim = c(-1, 10), ylim = c(-3, 6), asp = 1, xlab = "x", ylab = "y")
 draw.circle(p1[1L], p1[2L], radius = 1, border = "red")
@@ -16,8 +17,9 @@ draw.circle(p2[1L], p2[2L], radius = 1.5, border = "green")
 draw.circle(p3[1L], p3[2L], radius = 1, border = "blue")
 draw.circle(p4[1L], p4[2L], radius = 2, border = "gray")
 draw.circle(p5[1L], p5[2L], radius = 1, border = "yellow")
+draw.circle(p6[1L], p6[2L], radius = 0.5, border = "maroon")
 
-stuff <- Apollonius:::test()
+stuff <- Apollonius:::test(sites, radii)
 
 vertices <- stuff[["vertices"]]
 
@@ -25,13 +27,11 @@ neighbors <- stuff[["neighbors"]]
 Neighs <- c()
 x <- na.omit(neighbors[1L, ])[1L]
 Neighs[1L] <- which(neighbors[1L, ] == x[1L])
-x <- setdiff(na.omit(neighbors[2L, ]), neighbors[1L, Neighs[1L]])
-Neighs[2L] <- which(neighbors[2L, ] == x[1L])
-x <- setdiff(na.omit(neighbors[3L, ]), neighbors[cbind(1L:2L, Neighs[1L:2L])])
-Neighs[3L] <- which(neighbors[3L, ] == x[1L])
-x <- setdiff(na.omit(neighbors[4L, ]), neighbors[cbind(1L:3L, Neighs[1L:3L])])
-Neighs[4L] <- which(neighbors[4L, ] == x[1L])
-Neighs
+for(i in 2L:nrow(neighbors)) {
+  x <-
+    setdiff(na.omit(neighbors[i, ]), neighbors[cbind(1L:(i-1L), Neighs[1L:(i-1L)])])
+  Neighs[i] <- which(neighbors[i, ] == x[1L])
+}
 
 commonVertices <-
   abind::abind(stuff[["cvertex1"]], stuff[["cvertex2"]], along = 3L)
@@ -51,6 +51,7 @@ B <- vertices[[1L]][vs[2L], 1L:2L]
 rB <- vertices[[1L]][vs[2L], 3L]
 sqrt(c(crossprod(P1 - A))) - rA
 sqrt(c(crossprod(P1 - B))) - rB
+
 ctr <- (A + B)/2
 P2 <- dpoints[neighbors[1L, Neighs[1L]], ]
 f <- function(s) {
@@ -59,14 +60,14 @@ f <- function(s) {
   Bd <- d - B
   sqrt(c(crossprod(Ad))) - sqrt(c(crossprod(Bd))) - (rA - rB)
 }
-ur <- uniroot(f, lower = 0.1, upper = 5)
+ur <- uniroot(f, lower = 0.01, upper = 5)
 s <- ur$root
 #points(rbind(ctr), col = "blue", pch = 19)
 hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
 lines(hseg, col="black")
 
 
-for(i in 2L:4L) {
+for(i in 2L:nrow(dpoints)) {
   P1 <- dpoints[i, ]
   vs <- commonVertices[i, Neighs[i], ]
   A <- vertices[[i]][vs[1L], 1L:2L]
@@ -81,7 +82,7 @@ for(i in 2L:4L) {
     Bd <- d - B
     sqrt(c(crossprod(Ad))) - sqrt(c(crossprod(Bd))) - (rA - rB)
   }
-  ur <- uniroot(f, lower = 0.1, upper = 5)
+  ur <- uniroot(f, lower = 0.01, upper = 5)
   s <- ur$root
   hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
   lines(hseg, col="black")
