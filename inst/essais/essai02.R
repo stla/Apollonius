@@ -52,7 +52,7 @@ rB <- vertices[[1L]][vs[2L], 3L]
 sqrt(c(crossprod(P1 - A))) - rA
 sqrt(c(crossprod(P1 - B))) - rB
 ctr <- (A + B)/2
-P2 <- dpoints[neighbors[1L, Neights[1L]]]
+P2 <- dpoints[neighbors[1L, Neighs[1L]], ]
 f <- function(s) {
   d <- ctr + gyromidpoint(P1-ctr, P2-ctr, s)
   Ad <- d - A
@@ -63,45 +63,26 @@ ur <- uniroot(f, lower = 0.1, upper = 5)
 s <- ur$root
 #points(rbind(ctr), col = "blue", pch = 19)
 hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
-lines(hseg, col="navy")
-
-ctr <- (p2 + p4)/2
-f <- function(s) {
-  d <- ctr + gyromidpoint(P2-ctr, P3-ctr, s)
-  p4d <- d - p4
-  p2d <- d - p2
-  sqrt(c(crossprod(p4d))) - sqrt(c(crossprod(p2d))) - 0.5
-}
-ur <- uniroot(f, lower = 0.1, upper = 5)
-( s <- ur$root )
-#points(rbind(ctr), col = "blue", pch = 19)
-hseg <- t(ctr + t(gyrosegment(P2-ctr, P3-ctr, s = s)))
-lines(hseg, col="navy")
-
-ctr <- (p2 + p1)/2
-f <- function(s) {
-  d <- ctr + gyromidpoint(P4-ctr, P1-ctr, s)
-  p1d <- d - p1
-  p2d <- d - p2
-  sqrt(c(crossprod(p1d))) - sqrt(c(crossprod(p2d))) + 0.5
-}
-ur <- uniroot(f, lower = 0.1, upper = 5)
-( s <- ur$root )
-#points(rbind(ctr), col = "blue", pch = 19)
-hseg <- t(ctr + t(gyrosegment(P1-ctr, P4-ctr, s = s)))
-lines(hseg, col="navy")
-
-ctr <- (p2 + p5)/2
-f <- function(s) {
-  d <- ctr + gyromidpoint(P4-ctr, P3-ctr, s)
-  p5d <- d - p5
-  p2d <- d - p2
-  sqrt(c(crossprod(p5d))) - sqrt(c(crossprod(p2d))) + 0.5
-}
-ur <- uniroot(f, lower = 0.1, upper = 5)
-( s <- ur$root )
-#points(rbind(ctr), col = "blue", pch = 19)
-hseg <- t(ctr + t(gyrosegment(P3-ctr, P4-ctr, s = s)))
 lines(hseg, col="black")
 
 
+for(i in 2L:4L) {
+  P1 <- dpoints[i, ]
+  vs <- commonVertices[i, Neighs[i], ]
+  A <- vertices[[i]][vs[1L], 1L:2L]
+  rA <- vertices[[i]][vs[1L], 3L]
+  B <- vertices[[i]][vs[2L], 1L:2L]
+  rB <- vertices[[i]][vs[2L], 3L]
+  ctr <- (A + B)/2
+  P2 <- dpoints[neighbors[i, Neighs[i]], ]
+  f <- function(s) {
+    d <- ctr + gyromidpoint(P1-ctr, P2-ctr, s)
+    Ad <- d - A
+    Bd <- d - B
+    sqrt(c(crossprod(Ad))) - sqrt(c(crossprod(Bd))) - (rA - rB)
+  }
+  ur <- uniroot(f, lower = 0.1, upper = 5)
+  s <- ur$root
+  hseg <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
+  lines(hseg, col="black")
+}
