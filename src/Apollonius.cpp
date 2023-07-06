@@ -27,19 +27,24 @@ typedef ApolloniusGraph::Site_2                             Site2;
 Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
 
   const int nsites = sites.nrow();
+
   ApolloniusGraph ag;
   for(int i = 0; i < nsites; i++) {
     Point2 p(sites(i, 0), sites(i, 1));
     Site2  s(p, radii(i));
     ag.insert(s);
   }
+
   // validate the Apollonius graph
-  assert(ag.is_valid(true, 1));
+  if(!ag.is_valid(true, 1)) {
+    Rcpp::stop("The Apollonius graph is not valid.");
+  };
 
   int n = 1;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
     f->info() = n++;
   }
+
   const int nfaces = n - 1;
 
   Rcpp::IntegerMatrix Neighbors(nfaces, 3);
@@ -50,10 +55,12 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
 
   int fid = 0;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
+
     Rcpp::Rcout << "\nface vertices:\n";
     Rcpp::Rcout << "v1: " << f->vertex(0)->site() << "\n";
     Rcpp::Rcout << "v2: " << f->vertex(1)->site() << "\n";
     Rcpp::Rcout << "v3: " << f->vertex(2)->site() << "\n";
+
     Rcpp::NumericMatrix VS(3, 3);
     VS(0, 0) = f->vertex(0)->site().point().x();
     VS(0, 1) = f->vertex(0)->site().point().y();
@@ -65,8 +72,10 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
     VS(2, 1) = f->vertex(2)->site().point().y();
     VS(2, 2) = f->vertex(2)->site().weight();
     Vertices(fid) = VS;
+
     Rcpp::Rcout << "face id: ";
     Rcpp::Rcout << f->info() << "\n";
+
     Rcpp::IntegerVector neighbors(3);
     for(int i = 0; i < 3; i++) {
       if(ag.is_infinite(f->neighbor(i))) {
@@ -85,7 +94,7 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
         commonVertices.reserve(2);
         for(int k = 0; k < 3; k++) {
           if(f->neighbor(j)->has_vertex(f->vertex(k))) {
-            commonVertices.emplace_back(k+1);
+            commonVertices.emplace_back(k + 1);
           }
         }
         Rcpp::Rcout << "common vertices: "
@@ -94,12 +103,15 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
         CommonVertex2(fid, j) = commonVertices[1];
       }
     }
+
     Rcpp::Rcout << "face dual:\n";
     Rcpp::Rcout << ag.dual(f) << "\n";
+
     Site2 site = ag.dual(f);
-    Point2 pt = site.point();
+    Point2 pt  = site.point();
     DualPoints(fid, 0) = pt.x();
     DualPoints(fid, 1) = pt.y();
+
     fid++;
   }
 
