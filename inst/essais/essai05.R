@@ -69,8 +69,10 @@ Apollonius <- function(sites, radii) {
       h <- h + 1L
     }
   }
+  wsites <- cbind(sites, radii)
+  colnames(wsites) <- c("x", "y", "weight")
   list(
-    "diagram" = list("sites" = cbind(sites, radii)),
+    "diagram" = list("sites" = wsites),
     "graph"   = list("sites" = dpoints, "edges" = hsegments)
   )
 }

@@ -19,6 +19,8 @@ typedef CGAL::Triangulation_data_structure_2<Vb, Fb>              Tds;
 //typedef CGAL::Triangulation_2<K,Tds>                        Triangulation;
 typedef CGAL::Apollonius_graph_2<Traits, Tds>                     ApolloniusGraph;
 typedef ApolloniusGraph::Site_2                                   Site2;
+typedef Traits::Line_2                                            Line2;
+typedef Traits::Object_2                                          Object2;
 //typedef ApolloniusGraph::Triangulation_data_structure       Tds;
 //typedef Triangulation::Vertex_handle                        Vertex_handle;
 
@@ -195,10 +197,23 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
       }
     }
 
-    Site2 site = ag.dual(f);
-    Point2 pt  = site.point();
-    DualPoints(fid, 0) = pt.x();
-    DualPoints(fid, 1) = pt.y();
+    Traits traits = ag.geom_traits();
+    Traits::Construct_object_2 cstrct = traits.construct_object_2_object();
+    Object2 obj = cstrct(ag.dual(f));
+    Traits::Assign_2 assgn = traits.assign_2_object();
+    Site2 site;
+    Line2 line;
+
+    if(assgn(site, obj)) {
+      Point2 pt  = site.point();
+      DualPoints(fid, 0) = pt.x();
+      DualPoints(fid, 1) = pt.y();
+    } else if(assgn(line, obj)) {
+      Point2 pt = line.point();
+      DualPoints(fid, 0) = pt.x();
+      DualPoints(fid, 1) = pt.y();
+    }
+
     fid++;
   }
 

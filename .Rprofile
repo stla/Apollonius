@@ -11,7 +11,7 @@ myinstall <- function() {
     )
   } else {
     try(dllunload())
-    try(detach("package:Apollonius", character.only = TRUE))
+    try(pkgload::unload("Apollonius"))
     devtools::install(quick = TRUE, keep_source = TRUE)
   }
 }
