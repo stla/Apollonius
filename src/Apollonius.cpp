@@ -62,15 +62,22 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii){
     Rcpp::Rcout << "v3: " << f->vertex(2)->site() << "\n";
 
     Rcpp::NumericMatrix VS(3, 3);
-    VS(0, 0) = f->vertex(0)->site().point().x();
-    VS(0, 1) = f->vertex(0)->site().point().y();
-    VS(0, 2) = f->vertex(0)->site().weight();
-    VS(1, 0) = f->vertex(1)->site().point().x();
-    VS(1, 1) = f->vertex(1)->site().point().y();
-    VS(1, 2) = f->vertex(1)->site().weight();
-    VS(2, 0) = f->vertex(2)->site().point().x();
-    VS(2, 1) = f->vertex(2)->site().point().y();
-    VS(2, 2) = f->vertex(2)->site().weight();
+    for(int i = 0; i < 3; i++) {
+      Site2 site = f->vertex(i)->site();
+      Point2 pt  = site.point();
+      VS(i, 0) = pt.x();
+      VS(i, 1) = pt.y();
+      VS(i, 2) = site.weight();
+    }
+    // VS(0, 0) = f->vertex(0)->site().point().x();
+    // VS(0, 1) = f->vertex(0)->site().point().y();
+    // VS(0, 2) = f->vertex(0)->site().weight();
+    // VS(1, 0) = f->vertex(1)->site().point().x();
+    // VS(1, 1) = f->vertex(1)->site().point().y();
+    // VS(1, 2) = f->vertex(1)->site().weight();
+    // VS(2, 0) = f->vertex(2)->site().point().x();
+    // VS(2, 1) = f->vertex(2)->site().point().y();
+    // VS(2, 2) = f->vertex(2)->site().weight();
     Vertices(fid) = VS;
 
     Rcpp::Rcout << "face id: ";
