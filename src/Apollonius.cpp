@@ -1,44 +1,44 @@
 #include <Rcpp.h>
 #define CGAL_EIGEN3_ENABLED 1
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Apollonius_graph_2.h>
-#include <CGAL/Apollonius_site_2.h>
 #include <CGAL/Apollonius_graph_traits_2.h>
 #include <CGAL/Apollonius_graph_vertex_base_2.h>
+#include <CGAL/Apollonius_site_2.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 //#include <CGAL/Triangulation_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
-//#include <CGAL/Triangulation_vertex_base_with_info_2.h>
+#include <CGAL/Triangulation_vertex_base_with_info_2.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef K::Point_2                                          Point2;
-typedef CGAL::Apollonius_graph_traits_2<K>                  Traits;
-//typedef CGAL::Triangulation_vertex_base_with_info_2<int, K> Vbi2;
-typedef CGAL::Apollonius_graph_vertex_base_2<Traits, false> Vb;
-typedef CGAL::Triangulation_face_base_with_info_2<int, K>   Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb, Fb>        Tds;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel       K;
+typedef K::Point_2                                                Point2;
+typedef CGAL::Apollonius_graph_traits_2<K>                        Traits;
+typedef CGAL::Triangulation_vertex_base_with_info_2<int, K>       Vbi2;
+typedef CGAL::Apollonius_graph_vertex_base_2<Traits, false, Vbi2> Vb;
+typedef CGAL::Triangulation_face_base_with_info_2<int, K>         Fb;
+typedef CGAL::Triangulation_data_structure_2<Vb, Fb>              Tds;
 //typedef CGAL::Triangulation_2<K,Tds>                        Triangulation;
-typedef CGAL::Apollonius_graph_2<Traits, Tds>               ApolloniusGraph;
-typedef ApolloniusGraph::Site_2                             Site2;
+typedef CGAL::Apollonius_graph_2<Traits, Tds>                     ApolloniusGraph;
+typedef ApolloniusGraph::Site_2                                   Site2;
 //typedef ApolloniusGraph::Triangulation_data_structure       Tds;
 //typedef Triangulation::Vertex_handle                        Vertex_handle;
 
-
 // [[Rcpp::export]]
-Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
+Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii){
 
   const int nsites = sites.nrow();
 
   ApolloniusGraph ag;
   for(int i = 0; i < nsites; i++) {
     Point2 p(sites(i, 0), sites(i, 1));
-    Site2  s(p, radii(i));
-    ag.insert(s);
+    Site2 s(p, radii(i));
+    ApolloniusGraph::Vertex_handle v = ag.insert(s);
+    v->info() = i + 1;
   }
 
   // validate the Apollonius graph
   if(!ag.is_valid(true, 1)) {
     Rcpp::stop("The Apollonius graph is not valid.");
-  };
+  }
 
   int n = 1;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
@@ -51,7 +51,7 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   Rcpp::IntegerMatrix CommonVertex1(nfaces, 3);
   Rcpp::IntegerMatrix CommonVertex2(nfaces, 3);
   Rcpp::NumericMatrix DualPoints(nfaces, 2);
-  Rcpp::List Vertices(nfaces);
+  Rcpp::List          Vertices(nfaces);
 
   int fid = 0;
   for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
@@ -88,7 +88,7 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
 
     for(int j = 0; j < 3; j++) {
       if(!ag.is_infinite(f->neighbor(j))) {
-        Rcpp::Rcout << "face neighbor " << j+1 << ": ";
+        Rcpp::Rcout << "face neighbor " << j + 1 << ": ";
         Rcpp::Rcout << f->neighbor(j)->info() << "\n";
         std::vector<int> commonVertices;
         commonVertices.reserve(2);
@@ -111,15 +111,12 @@ Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
     Point2 pt  = site.point();
     DualPoints(fid, 0) = pt.x();
     DualPoints(fid, 1) = pt.y();
-
     fid++;
   }
 
-  return Rcpp::List::create(
-    Rcpp::Named("vertices")  = Vertices,
-    Rcpp::Named("neighbors") = Neighbors,
-    Rcpp::Named("cvertex1")  = CommonVertex1,
-    Rcpp::Named("cvertex2")  = CommonVertex2,
-    Rcpp::Named("dpoints")   = DualPoints
-  );
+  return Rcpp::List::create(Rcpp::Named("vertices")  = Vertices,
+                            Rcpp::Named("neighbors") = Neighbors,
+                            Rcpp::Named("cvertex1")  = CommonVertex1,
+                            Rcpp::Named("cvertex2")  = CommonVertex2,
+                            Rcpp::Named("dpoints")   = DualPoints);
 }

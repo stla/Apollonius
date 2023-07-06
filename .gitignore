@@ -54,7 +54,8 @@ src/*.so
 src/*.dll
 src-i386/
 src-x64/
+src/compile_flags.txt
+src/Makevars
 
 # other
 inst/trash/
-src/Makevars

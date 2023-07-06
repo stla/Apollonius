@@ -1,2 +1,9 @@
 ^Apollonius\.Rproj$
 ^\.Rproj\.user$
+^src/\.vscode$
+^src/\.clang-format$
+^src/\.clang-tidy$
+^src/\.editorconfig$
+^src/\.gitattributes$
+^src/\.gitignore$
+^src/compile_flags\.txt$
