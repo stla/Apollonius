@@ -1,6 +1,12 @@
 library(plotrix)
 library(gyro)
 
+gyroray <- function(A, B, s, n = 300, tmax = 50){
+  t(vapply(seq(0, tmax, length.out = n), function(t){
+    gyro:::UgyroABt(A, B, t, s)
+  }, numeric(length(A))))
+}
+
 p1  <- c(0, 0)
 p2  <- c(4, 1)
 p3  <- c(2, 4)
@@ -49,6 +55,7 @@ Apollonius <- function(sites, radii) {
   h <- 1L
   for(i in 1L:nrow(dpoints)) {
     P1 <- dpoints[i, ]
+    infinite <- !is.na(P1[3L])
     Neighs_i <- Neighs[[i]]
     vert_i <- vertices[[i]]
     for(k in seq_along(Neighs_i)) {
@@ -58,22 +65,34 @@ Apollonius <- function(sites, radii) {
       B  <- vert_i[vs[2L], 1L:2L]
       rB <- vert_i[vs[2L], 3L]
       ctr <- (A + B)/2
-      P2 <- dpoints[neighbors[i, Neighs_i[k]], ]
+      P2 <- dpoints[neighbors[i, Neighs_i[k]], c(1L, 2L)]
+      if(infinite) {
+        AB <- sqrt(c(crossprod(B-A)))
+        u <- (B-A) / AB
+        P1 <- A + (rA + (AB - (rA + rB))/2) * u
+      } else {
+        P1 <- P1[1:2]
+      }
       f <- function(log_s) {
         d <- ctr + gyromidpoint(P1-ctr, P2-ctr, exp(log_s))
         sqrt(c(crossprod(d-A))) - sqrt(c(crossprod(d-B))) - (rA - rB)
       }
       ur <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
       s <- exp(ur$root)
-      hsegments[[h]] <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
+      if(infinite) {
+        hsegments[[h]] <- t(ctr + t(gyroray(P2-ctr, P1-ctr, s = s)))
+      } else {
+        hsegments[[h]] <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
+      }
       h <- h + 1L
     }
   }
   wsites <- cbind(sites, radii)
   colnames(wsites) <- c("x", "y", "weight")
+  dsites <- dpoints[is.na(dpoints[, 3L]), ]
   list(
     "diagram" = list("sites" = wsites, "faces" = stuff[["faces"]]),
-    "graph"   = list("sites" = dpoints, "edges" = hsegments)
+    "graph"   = list("sites" = dsites, "edges" = hsegments)
   )
 }
 
@@ -114,19 +133,19 @@ sites <- rbind(
   c(10.5, 0),
   c(20, 0),
   c(0, 9.5),
-  #c(10.5, 9.5),
+  c(10.5, 9.5),
   c(20, 9.5),
   c(0, 16),
   c(10.5, 16),
   c(20, 16)
 )
-radii <- seq(5, 1, by = -0.5)[-5]
+radii <- seq(5, 1, by = -0.5)
 
-apo <- Apollonius(sites, radii/5)
+apo <- Apollonius(sites, radii)
 
 # svg("x.svg", width = 8, height = 4)
-opar <- par(mar = c(4, 4, 1, 1))
-plotApolloniusGraph(apo)
+opar <- par(mar = c(3, 3, 1, 1))
+plotApolloniusGraph(apo, limits = c(-5, 25))
 par(opar)
 # dev.off()
 #
@@ -136,12 +155,12 @@ par(opar)
 
 for(i in 1L:10L) {
   apo <- Apollonius(sites, radii)
-  svg("x.svg", width = 8, height = 4)
+  svg("x.svg", width = 8, height = 8)
   opar <- par(mar = c(3, 3, 1, 1))
-  plotApolloniusGraph(apo)
+  plotApolloniusGraph(apo, limits = c(-5, 25))
   par(opar)
   dev.off()
-  rsvg::rsvg_png("x.svg", sprintf("zzpic%03d.png", i), width = 512, height = 256)
+  rsvg::rsvg_png("x.svg", sprintf("zzpic%03d.png", i), width = 512, height = 512)
   radii <- radii * 0.95
 }
 
@@ -151,7 +170,7 @@ gifski(
   png_files = c(pngs, rev(pngs)),
   gif_file = "agraph03.gif",
   width = 512,
-  height = 256,
+  height = 512,
   delay = 1/8
 )
 file.remove(pngs)

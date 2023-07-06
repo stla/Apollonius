@@ -274,7 +274,7 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   }
 
   int n = 1;
-  for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
+  for(auto f = ag.all_faces_begin(); f != ag.all_faces_end(); f++) {
     f->info() = n++;
   }
 
@@ -284,11 +284,11 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   Rcpp::IntegerMatrix Neighbors(nfaces, 3);
   Rcpp::IntegerMatrix CommonVertex1(nfaces, 3);
   Rcpp::IntegerMatrix CommonVertex2(nfaces, 3);
-  Rcpp::NumericMatrix DualPoints(nfaces, 2);
+  Rcpp::NumericMatrix DualPoints(nfaces, 3);
   Rcpp::List          Vertices(nfaces);
 
   int fid = 0;
-  for(auto f = ag.finite_faces_begin(); f < ag.finite_faces_end(); f++) {
+  for(auto f = ag.all_faces_begin(); f != ag.all_faces_end(); f++) {
 
     Rcpp::IntegerVector Face = Rcpp::IntegerVector::create(
       f->vertex(0)->info(), f->vertex(1)->info(), f->vertex(2)->info()
@@ -329,21 +329,21 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
       }
     }
 
+    Face_handle fh(f);
+    Object2 obj = ag.dual(fh);
     Traits traits = ag.geom_traits();
-    Traits::Construct_object_2 cstrct = traits.construct_object_2_object();
-    Object2 obj = cstrct(ag.dual(f));
     Traits::Assign_2 assgn = traits.assign_2_object();
     Site2 site;
     Line2 line;
-
     if(assgn(site, obj)) {
       Point2 pt  = site.point();
       DualPoints(fid, 0) = pt.x();
       DualPoints(fid, 1) = pt.y();
+      DualPoints(fid, 2) = Rcpp::NumericVector::get_na();
     } else if(assgn(line, obj)) {
-      Point2 pt = line.point();
-      DualPoints(fid, 0) = pt.x();
-      DualPoints(fid, 1) = pt.y();
+      DualPoints(fid, 0) = line.a();
+      DualPoints(fid, 1) = line.b();
+      DualPoints(fid, 2) = line.c();
     }
 
     fid++;

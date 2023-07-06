@@ -1,8 +1,8 @@
 library(plotrix)
 library(gyro)
 
-gyroray <- function(A, B, s, n=300, tmax = -50){
-  t(vapply(seq(tmax, 1, length.out = n), function(t){
+gyroray <- function(A, B, s, n=300, tmax = 50){
+  t(vapply(seq(0, tmax, length.out = n), function(t){
     gyro:::UgyroABt(A, B, t, s)
   }, numeric(length(A))))
 }
@@ -124,10 +124,11 @@ for(i in 1L:nrow(dpoints)) {
       tryCatch({
         ur <- uniroot(f, lower = 0.001, upper = 15)
         s <- ur$root
+        message("j = ", j, "; s = ", s)
         if(j %in% c(15,9)) {
           hseg <- t(ctr + t(gyroray2(P2-ctr, P1-ctr, s = s)))
         } else {
-          hseg <- t(ctr + t(gyroray(P1-ctr, P2-ctr, s = s)))
+          hseg <- t(ctr + t(gyroray(P2-ctr, P1-ctr, s = s)))
         }
         lines(hseg, col="blue", lwd = 2)
       }, error = function(e) {
