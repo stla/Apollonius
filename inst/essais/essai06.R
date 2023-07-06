@@ -78,7 +78,7 @@ Apollonius <- function(sites, radii) {
 }
 
 
-apo <- Apollonius(sites, radii)
+#clrs <- randomcoloR::distinctColorPalette(10L)
 
 plotApolloniusGraph <- function(apo, limits = NULL) {
   sites  <- apo[["diagram"]][["sites"]]
@@ -109,6 +109,21 @@ plotApolloniusGraph <- function(apo, limits = NULL) {
   invisible()
 }
 
+sites <- rbind(
+  c(0, 0),
+  c(10.5, 0),
+  c(20, 0),
+  c(0, 9.5),
+  #c(10.5, 9.5),
+  c(20, 9.5),
+  c(0, 16),
+  c(10.5, 16),
+  c(20, 16)
+)
+radii <- seq(5, 1, by = -0.5)[-5]
+
+apo <- Apollonius(sites, radii/5)
+
 # svg("x.svg", width = 8, height = 4)
 opar <- par(mar = c(4, 4, 1, 1))
 plotApolloniusGraph(apo)
@@ -117,3 +132,26 @@ par(opar)
 #
 # rsvg::rsvg_png("x.svg", "inst/screenshots/agraph02.png", width = 512, height = 256)
 # file.remove("x.svg")
+
+
+for(i in 1L:10L) {
+  apo <- Apollonius(sites, radii)
+  svg("x.svg", width = 8, height = 4)
+  opar <- par(mar = c(3, 3, 1, 1))
+  plotApolloniusGraph(apo)
+  par(opar)
+  dev.off()
+  rsvg::rsvg_png("x.svg", sprintf("zzpic%03d.png", i), width = 512, height = 256)
+  radii <- radii * 0.95
+}
+
+library(gifski)
+pngs <- Sys.glob("zzpic*.png")
+gifski(
+  png_files = c(pngs, rev(pngs)),
+  gif_file = "agraph03.gif",
+  width = 512,
+  height = 256,
+  delay = 1/8
+)
+file.remove(pngs)
