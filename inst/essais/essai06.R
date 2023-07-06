@@ -1,8 +1,8 @@
 library(plotrix)
 library(gyro)
 
-gyroray <- function(A, B, s, n = 300, tmax = 50){
-  t(vapply(seq(0, tmax, length.out = n), function(t){
+gyroray <- function(A, B, s, n = 300, tmax = 50) {
+  t(vapply(seq(0, tmax, length.out = n), function(t) {
     gyro:::UgyroABt(A, B, t, s)
   }, numeric(length(A))))
 }
