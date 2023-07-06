@@ -81,35 +81,38 @@ Apollonius <- function(sites, radii) {
 apo <- Apollonius(sites, radii)
 
 plotApolloniusGraph <- function(apo, limits = NULL) {
-  sites <- apo[["diagram"]][["sites"]]
-  radii <- sites[, 3L]
+  sites  <- apo[["diagram"]][["sites"]]
+  nsites <- nrow(sites)
+  radii  <- sites[, "weight"]
   dsites <- apo[["graph"]][["sites"]]
-  edges <- apo[["graph"]][["edges"]]
+  edges  <- apo[["graph"]][["edges"]]
   #
-  clrs <- randomcoloR::distinctColorPalette(nrow(sites))
+  clrs <- randomcoloR::distinctColorPalette(nsites)
   #
   if(is.null(limits)) {
     x <- grDevices::extendrange(sites[, "x"])
     y <- grDevices::extendrange(sites[, "y"])
     limits <- c(min(x[1L], y[1L]), max(x[2L], y[2L]))
   }
-  opar <- par(mar = c(3, 3, 1, 1))
+  #
   plot(NULL, xlim = limits, ylim = limits, asp = 1, xlab = "x", ylab = "y")
-  for(i in 1L:nrow(sites)) {
+  for(i in 1L:nsites) {
     draw.circle(
-      sites[i, 1L], sites[i, 2L], radius = radii[i],
-      border = clrs[i], col = clrs[i], lwd = 4
+      sites[i, "x"], sites[i, "y"], radius = radii[i],
+      border = clrs[i], col = clrs[i]
     )
   }
   points(dsites, pch = 19)
   for(i in 1L:length(edges)) {
     lines(edges[[i]], col="black", lwd = 2)
   }
-  par(opar)
+  invisible()
 }
 
 # svg("x.svg", width = 8, height = 4)
+opar <- par(mar = c(4, 4, 1, 1))
 plotApolloniusGraph(apo)
+par(opar)
 # dev.off()
 #
 # rsvg::rsvg_png("x.svg", "inst/screenshots/agraph02.png", width = 512, height = 256)
