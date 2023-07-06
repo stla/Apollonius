@@ -19,6 +19,9 @@ radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
 Apollonius <- function(sites, radii) {
   stuff <- Apollonius:::test(sites, radii)
   neighbors <- stuff[["neighbors"]]
+  if(nrow(neighbors) == 0L) {
+    stop("The Apollonius diagram is empty.")
+  }
   #
   Neighs <- vector("list", nrow(neighbors))
   for(i in 1L:nrow(neighbors)) {
@@ -66,28 +69,37 @@ Apollonius <- function(sites, radii) {
       h <- h + 1L
     }
   }
-  list("sites" = dpoints, "edges" = hsegments)
+  list(
+    "diagram" = list("sites" = cbind(sites, radii)),
+    "graph"   = list("sites" = dpoints, "edges" = hsegments)
+  )
 }
 
 
 
 
 stuff <- Apollonius(sites, radii)
-dsites <- stuff[["sites"]]
-edges <- stuff[["edges"]]
+sites <- stuff[["diagram"]][["sites"]]
+radii <- sites[, 3L]
+dsites <- stuff[["graph"]][["sites"]]
+edges <- stuff[["graph"]][["edges"]]
 
 clrs <- randomcoloR::distinctColorPalette(nrow(sites))
 
+# svg("x.svg", width = 8, height = 4)
 opar <- par(mar = c(3, 3, 1, 1))
 plot(NULL, xlim = c(-1, 10), ylim = c(-3, 6), asp = 1, xlab = "x", ylab = "y")
 for(i in 1L:nrow(sites)) {
   draw.circle(
     sites[i, 1L], sites[i, 2L], radius = radii[i],
-    border = clrs[i], lwd = 4
+    border = clrs[i], col = clrs[i], lwd = 4
   )
 }
 points(dsites, pch = 19)
 for(i in 1L:length(edges)) {
   lines(edges[[i]], col="black", lwd = 2)
 }
-
+# dev.off()
+#
+# rsvg::rsvg_png("x.svg", "inst/screenshots/agraph02.png", width = 512, height = 256)
+# file.remove("x.svg")
