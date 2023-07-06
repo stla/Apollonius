@@ -5,3 +5,7 @@ test <- function(sites, radii) {
     .Call(`_Apollonius_test`, sites, radii)
 }
 
+ApolloniusCpp <- function(sites, radii) {
+    .Call(`_Apollonius_ApolloniusCpp`, sites, radii)
+}
+
