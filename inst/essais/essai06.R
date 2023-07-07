@@ -1,21 +1,17 @@
 library(plotrix)
 library(gyro)
 
-gyroray <- function(A, B, s, n = 300, tmax = 20, AtoB = TRUE) {
-  if(AtoB) {
+gyroray <- function(O, A, s, n = 300, tmax = 20, OtoA = TRUE) {
+  if(OtoA) {
     t_ <- seq(0, tmax, length.out = n)
   } else {
     t_ <- seq(-tmax, 0, length.out = n)
   }
   t(vapply(t_, function(t) {
-    gyro:::UgyroABt(A, B, t, s)
+    gyro:::UgyroABt(O, A, t, s)
   }, numeric(length(A))))
 }
-# gyroray2 <- function(A, B, s, n=300, tmax = -20){
-#   t(vapply(seq(tmax, 0, length.out = n), function(t){
-#     gyro:::UgyroABt(A, B, t, s)
-#   }, numeric(length(A))))
-# }
+
 
 p1  <- c(0, 0)
 p2  <- c(4, 1)
@@ -95,7 +91,7 @@ Apollonius <- function(sites, radii) {
         X_is_up <- P1[1L]*X[1L] + P1[2L]*X[2L] > P1[3L]
         reverse <- P_is_up != X_is_up
         hsegments[[h]] <-
-          t(ctr + t(gyroray(P2-ctr, P-ctr, s = s, AtoB = !reverse)))
+          t(ctr + t(gyroray(P2-ctr, P-ctr, s = s, OtoA = !reverse)))
       } else {
         hsegments[[h]] <- t(ctr + t(gyrosegment(P-ctr, P2-ctr, s = s)))
       }
