@@ -1,16 +1,21 @@
 library(plotrix)
 library(gyro)
 
-gyroray <- function(A, B, s, n = 300, tmax = 20) {
-  t(vapply(seq(0, tmax, length.out = n), function(t) {
+gyroray <- function(A, B, s, n = 300, tmax = 20, AtoB = TRUE) {
+  if(AtoB) {
+    t_ <- seq(0, tmax, length.out = n)
+  } else {
+    t_ <- seq(-tmax, 0, length.out = n)
+  }
+  t(vapply(t_, function(t) {
     gyro:::UgyroABt(A, B, t, s)
   }, numeric(length(A))))
 }
-gyroray2 <- function(A, B, s, n=300, tmax = -20){
-  t(vapply(seq(tmax, 0, length.out = n), function(t){
-    gyro:::UgyroABt(A, B, t, s)
-  }, numeric(length(A))))
-}
+# gyroray2 <- function(A, B, s, n=300, tmax = -20){
+#   t(vapply(seq(tmax, 0, length.out = n), function(t){
+#     gyro:::UgyroABt(A, B, t, s)
+#   }, numeric(length(A))))
+# }
 
 p1  <- c(0, 0)
 p2  <- c(4, 1)
@@ -89,11 +94,8 @@ Apollonius <- function(sites, radii) {
         X <- ctr + gyroABt(P2-ctr, P-ctr, t = 2, s = s)
         X_is_up <- P1[1]*X[1] + P1[2]*X[2] > P1[3]
         reverse <- P_is_up != X_is_up
-        if(reverse) {
-          hsegments[[h]] <- t(ctr + t(gyroray2(P2-ctr, P-ctr, s = s)))
-        } else {
-          hsegments[[h]] <- t(ctr + t(gyroray(P2-ctr, P-ctr, s = s)))
-        }
+        hsegments[[h]] <-
+          t(ctr + t(gyroray(P2-ctr, P-ctr, s = s, AtoB = !reverse)))
       } else {
         hsegments[[h]] <- t(ctr + t(gyrosegment(P-ctr, P2-ctr, s = s)))
       }
@@ -141,18 +143,18 @@ plotApolloniusGraph <- function(apo, limits = NULL) {
   invisible()
 }
 
-sites <- rbind(
-  c(0, 0),
-  c(10.5, 0),
-  c(20, 0),
-  c(0, 9.5),
-  c(10.5, 9.5),
-  c(20, 9.5),
-  c(0, 16),
-  c(10.5, 16),
-  c(20, 16)
-)
-radii <- seq(5, 1, by = -0.5)
+# sites <- rbind(
+#   c(0, 0),
+#   c(10.5, 0),
+#   c(20, 0),
+#   c(0, 9.5),
+#   c(10.5, 9.5),
+#   c(20, 9.5),
+#   c(0, 16),
+#   c(10.5, 16),
+#   c(20, 16)
+# )
+# radii <- seq(5, 1, by = -0.5)
 
 apo <- Apollonius(sites, radii)
 
