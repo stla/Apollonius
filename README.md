@@ -15,4 +15,4 @@ ___
 This package is provided under the GPL-3 license but it uses the C++ library 
 [CGAL](https://www.cgal.org/) which requires a license from the 
 [GeometryFactory](https://geometryfactory.com) if you wish to use it for 
-commercial purposes, 
+commercial purposes.
