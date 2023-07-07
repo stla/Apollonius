@@ -1,6 +1,7 @@
 library(plotrix)
 library(gyro)
-
+library(randomcoloR)
+library(abind)
 # gyroray <- function(O, A, s, n = 300, tmax = 20, OtoA = TRUE) {
 #   if(OtoA) {
 #     t_ <- seq(0, tmax, length.out = n)
@@ -81,6 +82,7 @@ radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
 #' @export
 #'
 #' @importFrom gyro gyrosegment gyroray gyroABt
+#' @importFrom abind abind
 #'
 #' @examples
 #' library(Apollonius)
@@ -99,7 +101,7 @@ radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
 #' radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
 #' apo <- Apollonius(sites, radii)
 #' opar <- par(mar = c(3, 3, 1, 1))
-#' plotApolloniusGraph(apo)
+#' plotApolloniusGraph(apo, xlab = "x", ylab = "y")
 #' par(opar)
 Apollonius <- function(
   sites, radii, t0 = 2, tmax = 10, nsegs = 100L, nrays = 300L
@@ -127,7 +129,7 @@ Apollonius <- function(
   }
   #
   commonVertices <-
-    abind::abind(stuff[["cvertex1"]], stuff[["cvertex2"]], along = 3L)
+    abind(stuff[["cvertex1"]], stuff[["cvertex2"]], along = 3L)
   #
   dpoints <- stuff[["dpoints"]]
   vertices <- stuff[["vertices"]]
@@ -154,12 +156,14 @@ Apollonius <- function(
       } else {
         P <- P1[c(1L, 2L)]
       }
-      f <- function(log_s) {
-        d <- ctr + gyromidpoint(P-ctr, P2-ctr, exp(log_s))
-        sqrt(c(crossprod(d-A))) - sqrt(c(crossprod(d-B))) - (rA - rB)
+      if(rA != rB) {
+        f <- function(log_s) {
+          d <- ctr + gyromidpoint(P-ctr, P2-ctr, exp(log_s))
+          sqrt(c(crossprod(d-A))) - sqrt(c(crossprod(d-B))) - (rA - rB)
+        }
+        ur <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
+        s <- exp(ur[["root"]])
       }
-      ur <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
-      s <- exp(ur[["root"]])
       if(infinite) {
         P_is_up <- P1[1L]*P[1L] + P1[2L]*P[2L] > P1[3L]
         if(rA == rB) {
@@ -179,7 +183,7 @@ Apollonius <- function(
         }
       } else {
         if(rA == rB) {
-          hsegments[[h]] <- segment(P, P2,n = nsegs)
+          hsegments[[h]] <- segment(P, P2, n = nsegs)
         } else {
           hsegments[[h]] <- t(ctr + t(gyrosegment(
             P-ctr, P2-ctr, s = s, n = nsegs
@@ -201,22 +205,75 @@ Apollonius <- function(
 
 clrs <- randomcoloR::distinctColorPalette(10L)
 
-plotApolloniusGraph <- function(apo, limits = NULL) {
+
+#' @title Plot Apollonius graph
+#' @description Plot an Apollonius graph.
+#'
+#' @param apo an output of \code{\link{Apollonius}}
+#' @param limits either \code{NULL} or a vector of length two passed to the
+#'   arguments \code{xlim} and \code{ylim} of \code{\link[graphics]{plot}};
+#'   if \code{NULL}, automatic limits are calculated
+#' @param colors a character string controlling the colors of the sites;
+#'   either \code{"distinct"} for random distinct colors, \code{"random"} for
+#'   random colors controlled by the arguments \code{hue} and
+#'   \code{luminosity}, or a color name or hex code
+#' @param hue,luminosity if \code{colors="random"}, these arguments are passed
+#'   to \code{\link[randomcoloR]{randomColor}}
+#' @param ... arguments passed to \code{\link[graphics]{plot}}, such as
+#'   \code{xlab} and \code{ylab}
+#'
+#' @return No returned value, called for plotting.
+#' @export
+#'
+#' @importFrom randomcoloR distinctColorPalette randomColor
+#' @importFrom grDevices extendrange
+#' @importFrom graphics plot points lines
+#' @importFrom plotrix draw.circle
+#'
+#' @examples
+#' library(Apollonius)
+#' sites <- rbind(
+#'   c(0, 0),
+#'   c(4, 1),
+#'   c(2, 4),
+#'   c(7, 4),
+#'   c(8, 0),
+#'   c(5, -2),
+#'   c(-4, 4),
+#'   c(-2, -1),
+#'   c(11, 4),
+#'   c(11, 0)
+#' )
+#' radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
+#' apo <- Apollonius(sites, radii)
+#' opar <- par(mar = c(3, 3, 1, 1))
+#' plotApolloniusGraph(apo, colors = "random", xlab = NA, ylab = NA)
+#' par(opar)
+plotApolloniusGraph <- function(
+  apo, limits = NULL, colors = "distinct", hue = "random", luminosity = "dark",
+  ...
+) {
   sites  <- apo[["diagram"]][["sites"]]
   nsites <- nrow(sites)
   radii  <- sites[, "weight"]
   dsites <- apo[["graph"]][["sites"]]
   edges  <- apo[["graph"]][["edges"]]
   #
-  #clrs <- randomcoloR::distinctColorPalette(nsites)
+  if(colors == "distinct") {
+    clrs <- distinctColorPalette(nsites)
+  } else if(colors == "random") {
+    clrs <- randomColor(nsites, hue = hue, luminosity = luminosity)
+  } else {
+    clrs <- rep(colors, nsites)
+  }
   #
   if(is.null(limits)) {
-    x <- grDevices::extendrange(sites[, "x"])
-    y <- grDevices::extendrange(sites[, "y"])
+    x <- extendrange(sites[, "x"])
+    y <- extendrange(sites[, "y"])
     limits <- c(min(x[1L], y[1L]), max(x[2L], y[2L]))
   }
   #
-  plot(NULL, xlim = limits, ylim = limits, asp = 1, xlab = "x", ylab = "y")
+  plot(NULL, xlim = limits, ylim = limits, asp = 1, ...)
   for(i in 1L:nsites) {
     draw.circle(
       sites[i, "x"], sites[i, "y"], radius = radii[i],
