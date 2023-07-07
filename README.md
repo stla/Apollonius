@@ -7,6 +7,14 @@ ___
 
 ![](https://raw.githubusercontent.com/stla/Apollonius/main/inst/screenshots/agraph03.gif)
 
+___
+
+## Installation
+
+```r
+remotes::install_github("stla/gyro")
+remotes::install_github("stla/Apollonius")
+```
 
 ___
 
