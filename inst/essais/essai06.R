@@ -110,7 +110,7 @@ Apollonius <- function(sites, radii) {
 }
 
 
-#clrs <- randomcoloR::distinctColorPalette(10L)
+clrs <- randomcoloR::distinctColorPalette(10L)
 
 plotApolloniusGraph <- function(apo, limits = NULL) {
   sites  <- apo[["diagram"]][["sites"]]
@@ -119,7 +119,7 @@ plotApolloniusGraph <- function(apo, limits = NULL) {
   dsites <- apo[["graph"]][["sites"]]
   edges  <- apo[["graph"]][["edges"]]
   #
-  clrs <- randomcoloR::distinctColorPalette(nsites)
+  #clrs <- randomcoloR::distinctColorPalette(nsites)
   #
   if(is.null(limits)) {
     x <- grDevices::extendrange(sites[, "x"])
@@ -168,12 +168,12 @@ par(opar)
 
 for(i in 1L:10L) {
   apo <- Apollonius(sites, radii)
-  svg("x.svg", width = 8, height = 8)
+  svg("x.svg", width = 8, height = 4)
   opar <- par(mar = c(3, 3, 1, 1))
-  plotApolloniusGraph(apo, limits = c(-5, 25))
+  plotApolloniusGraph(apo)#, limits = c(-5, 25))
   par(opar)
   dev.off()
-  rsvg::rsvg_png("x.svg", sprintf("zzpic%03d.png", i), width = 512, height = 512)
+  rsvg::rsvg_png("x.svg", sprintf("zzpic%03d.png", i), width = 512, height = 256)
   radii <- radii * 0.95
 }
 
