@@ -1,8 +1,13 @@
 library(plotrix)
 library(gyro)
 
-gyroray <- function(A, B, s, n = 300, tmax = 50) {
+gyroray <- function(A, B, s, n = 300, tmax = 20) {
   t(vapply(seq(0, tmax, length.out = n), function(t) {
+    gyro:::UgyroABt(A, B, t, s)
+  }, numeric(length(A))))
+}
+gyroray2 <- function(A, B, s, n=300, tmax = -20){
+  t(vapply(seq(tmax, 0, length.out = n), function(t){
     gyro:::UgyroABt(A, B, t, s)
   }, numeric(length(A))))
 }
@@ -69,20 +74,28 @@ Apollonius <- function(sites, radii) {
       if(infinite) {
         AB <- sqrt(c(crossprod(B-A)))
         u <- (B-A) / AB
-        P1 <- A + (rA + (AB - (rA + rB))/2) * u
+        P <- A + (rA + (AB - (rA + rB))/2) * u
       } else {
-        P1 <- P1[1:2]
+        P <- P1[1:2]
       }
       f <- function(log_s) {
-        d <- ctr + gyromidpoint(P1-ctr, P2-ctr, exp(log_s))
+        d <- ctr + gyromidpoint(P-ctr, P2-ctr, exp(log_s))
         sqrt(c(crossprod(d-A))) - sqrt(c(crossprod(d-B))) - (rA - rB)
       }
       ur <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
       s <- exp(ur$root)
       if(infinite) {
-        hsegments[[h]] <- t(ctr + t(gyroray(P2-ctr, P1-ctr, s = s)))
+        P_is_up <- P1[1]*P[1] + P1[2]*P[2] > P1[3]
+        X <- ctr + gyroABt(P2-ctr, P-ctr, t = 2, s = s)
+        X_is_up <- P1[1]*X[1] + P1[2]*X[2] > P1[3]
+        reverse <- P_is_up != X_is_up
+        if(reverse) {
+          hsegments[[h]] <- t(ctr + t(gyroray2(P2-ctr, P-ctr, s = s)))
+        } else {
+          hsegments[[h]] <- t(ctr + t(gyroray(P2-ctr, P-ctr, s = s)))
+        }
       } else {
-        hsegments[[h]] <- t(ctr + t(gyrosegment(P1-ctr, P2-ctr, s = s)))
+        hsegments[[h]] <- t(ctr + t(gyrosegment(P-ctr, P2-ctr, s = s)))
       }
       h <- h + 1L
     }

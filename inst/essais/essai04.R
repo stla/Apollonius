@@ -98,9 +98,10 @@ for(i in 1L:nrow(dpoints)) {
       })
     }
   } else {
-    # a <- -P1[3]/P1[2]
-    # b <- -P1[1]/P1[2]
-    # abline(a, b, col = "green")
+    clr <- randomcoloR::randomColor(hue = "random", luminosity = "random")
+    a <- -P1[3]/P1[2]
+    b <- -P1[1]/P1[2]
+    abline(a, b, col = clr, lwd = 3, lty="dashed")
     Neighs_i <- Neighs[[i]]
     vert_i <- vertices[[i]]
     for(k in seq_along(Neighs_i)) {
@@ -111,12 +112,12 @@ for(i in 1L:nrow(dpoints)) {
       rB <- vert_i[vs[2L], 3L]
       AB <- sqrt(c(crossprod(B-A)))
       u <- (B-A) / AB
-      P1 <- A + (rA + (AB - (rA + rB))/2) * u
+      P <- A + (rA + (AB - (rA + rB))/2) * u
       ctr <- (A + B)/2
       j <- neighbors[i, Neighs_i[k]]
       P2 <- dpoints[j, 1:2]
       f <- function(s) {
-        d <- ctr + gyromidpoint(P1-ctr, P2-ctr, s)
+        d <- ctr + gyromidpoint(P-ctr, P2-ctr, s)
         Ad <- d - A
         Bd <- d - B
         sqrt(c(crossprod(Ad))) - sqrt(c(crossprod(Bd))) - (rA - rB)
@@ -124,13 +125,21 @@ for(i in 1L:nrow(dpoints)) {
       tryCatch({
         ur <- uniroot(f, lower = 0.001, upper = 15)
         s <- ur$root
-        message("j = ", j, "; s = ", s)
-        if(j %in% c(15,9)) {
-          hseg <- t(ctr + t(gyroray2(P2-ctr, P1-ctr, s = s)))
+        message("i = ", i, "; j = ", j, "; s = ", s)
+        face <- stuff[["vertices"]][[i]]
+        weights <- face[, 3L]
+        v <- face[which(weights != 0)[1L],]
+        v_is_up <- P1[1]*v[1] + P1[2]*v[2] > P1[3]
+        x <- ctr + gyroABt(P2-ctr, P-ctr, t = 2, s = s)
+        print(x)
+        P2_is_up <- P1[1]*x[1] + P1[2]*x[2] > P1[3]
+        reverse <- v_is_up != P2_is_up
+        if(reverse) {
+          hseg <- t(ctr + t(gyroray2(P2-ctr, P-ctr, s = s)))
         } else {
-          hseg <- t(ctr + t(gyroray(P2-ctr, P1-ctr, s = s)))
+          hseg <- t(ctr + t(gyroray(P2-ctr, P-ctr, s = s)))
         }
-        lines(hseg, col="blue", lwd = 2)
+        lines(hseg, col=clr, lwd = 2)
       }, error = function(e) {
         print("that should not happen")
       })
