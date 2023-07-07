@@ -49,6 +49,24 @@
 Apollonius <- function(
     sites, radii, t0 = 2, tmax = 10, nsegs = 100L, nrays = 300L
 ) {
+  stopifnot(
+    is.numeric(sites), is.matrix(sites), ncol(sites) == 2L, nrow(sites) >= 3L
+  )
+  storage.mode(sites) <- "double"
+  if(anyNA(sites)) {
+    stop("Missing values are not allowed.")
+  }
+  if(anyDuplicated(sites)) {
+    stop("Found duplicated sites.")
+  }
+  stopifnot(is.numeric(radii), length(radii) == nrow(sites), all(radii != 0))
+  storage.mode(radii) <- "double"
+  if(anyNA(radii)) {
+    stop("Found missing value(s) in `radii`.")
+  }
+  stopifnot(t0 > 1)
+  stopifnot(tmax > 1)
+  #
   stuff <- ApolloniusCpp(sites, radii)
   neighbors <- stuff[["neighbors"]]
   if(nrow(neighbors) == 0L) {
