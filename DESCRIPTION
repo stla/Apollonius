@@ -3,7 +3,7 @@ Title: 2D Apollonius Graphs
 Version: 0.0.0.9000
 Authors@R: 
     person("Stéphane", "Laurent", , "laurent_step@outlook.fr", role = c("aut", "cre"))
-Description: Computation of the Apollonius diagram of given 2D points and
+Description: Computation of the Apollonius graph of given 2D points and
     its dual the Apollonius diagram, also known as the additively weighted
     Voronoï diagram.
 License: GPL-3
