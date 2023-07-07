@@ -49,7 +49,7 @@
 Apollonius <- function(
     sites, radii, t0 = 2, tmax = 10, nsegs = 100L, nrays = 300L
 ) {
-  stuff <- Apollonius:::ApolloniusCpp(sites, radii)
+  stuff <- ApolloniusCpp(sites, radii)
   neighbors <- stuff[["neighbors"]]
   if(nrow(neighbors) == 0L) {
     stop("The Apollonius diagram is empty.")
