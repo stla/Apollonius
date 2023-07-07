@@ -12,6 +12,7 @@ BugReports: https://github.com/stla/Apollonius/issues
 Imports:
     abind,
     grDevices,
+    gyro,
     plotrix,
     randomcoloR,
     Rcpp
