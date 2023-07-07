@@ -1,16 +1,15 @@
 library(Apollonius)
 
-phi <- (1+sqrt(5)) / 2
-theta <- seq(1, 30, length.out = 100)
-x <- cos(theta) * phi^(theta/pi)
-y <- sin(theta) * phi^(theta/pi)
+theta <- seq(0, 30, length.out = 30L)
+x <- sqrt(theta) * cos(theta)
+y <- sqrt(theta) * sin(theta)
 sites <- cbind(x, y)
-radii <- seq(1, 100, length.out = 100L)
+radii <- seq(1, 5, length.out = 30L)
 
-apo <- Apollonius(sites, radii)
+apo <- Apollonius(sites, radii, t0 = 15)
 
 opar <- par(mar = c(2, 2, 1, 1))
-plotApolloniusGraph(apo, circles = FALSE, color = "red")
+plotApolloniusGraph(apo, circles = TRUE, color = "random")
 par(opar)
 
 fplot <- function(rmax) {
@@ -36,7 +35,7 @@ library(gifski)
 pngs <- Sys.glob("zzpic*.png")
 gifski(
   png_files = c(pngs, rev(pngs)),
-  gif_file = "goldenSpiral.gif",
+  gif_file = "FermatSpiral.gif",
   width = 512,
   height = 512,
   delay = 1/8

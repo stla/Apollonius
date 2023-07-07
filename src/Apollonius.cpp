@@ -13,7 +13,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel       K;
 typedef K::Point_2                                                Point2;
 typedef CGAL::Apollonius_graph_traits_2<K>                        Traits;
 typedef CGAL::Triangulation_vertex_base_with_info_2<int, K>       Vbi2;
-typedef CGAL::Apollonius_graph_vertex_base_2<Traits, false, Vbi2> Vb;
+typedef CGAL::Apollonius_graph_vertex_base_2<Traits, true, Vbi2>  Vb;
 typedef CGAL::Triangulation_face_base_with_info_2<int, K>         Fb;
 typedef CGAL::Triangulation_data_structure_2<Vb, Fb>              Tds;
 //typedef CGAL::Triangulation_2<K,Tds>                        Triangulation;
