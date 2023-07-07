@@ -5,6 +5,8 @@
 #' @param limits either \code{NULL} or a vector of length two passed to the
 #'   arguments \code{xlim} and \code{ylim} of \code{\link[graphics]{plot}};
 #'   if \code{NULL}, automatic limits are calculated
+#' @param circles Boolean, whether to plot the original sites as circles with
+#'   the given radii
 #' @param colors a character string controlling the colors of the sites;
 #'   either \code{"distinct"} for random distinct colors, \code{"random"} for
 #'   random colors controlled by the arguments \code{hue} and
@@ -42,8 +44,8 @@
 #' plotApolloniusGraph(apo, colors = "random", xlab = NA, ylab = NA)
 #' par(opar)
 plotApolloniusGraph <- function(
-    apo, limits = NULL, colors = "distinct", hue = "random", luminosity = "dark",
-    ...
+    apo, limits = NULL, circles = TRUE,
+    colors = "distinct", hue = "random", luminosity = "dark", ...
 ) {
   sites  <- apo[["diagram"]][["sites"]]
   nsites <- nrow(sites)
@@ -66,11 +68,19 @@ plotApolloniusGraph <- function(
   }
   #
   plot(NULL, xlim = limits, ylim = limits, asp = 1, ...)
-  for(i in 1L:nsites) {
-    draw.circle(
-      sites[i, "x"], sites[i, "y"], radius = radii[i],
-      border = clrs[i], col = clrs[i]
-    )
+  if(circles) {
+    for(i in 1L:nsites) {
+      draw.circle(
+        sites[i, "x"], sites[i, "y"], radius = radii[i],
+        border = clrs[i], col = clrs[i]
+      )
+    }
+  } else {
+    for(i in 1L:nsites) {
+      points(
+        sites[i, "x"], sites[i, "y"], pch = 19, col = clrs[i]
+      )
+    }
   }
   points(dsites, pch = 19)
   for(i in 1L:length(edges)) {

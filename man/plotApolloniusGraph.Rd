@@ -7,6 +7,7 @@
 plotApolloniusGraph(
   apo,
   limits = NULL,
+  circles = TRUE,
   colors = "distinct",
   hue = "random",
   luminosity = "dark",
@@ -19,6 +20,9 @@ plotApolloniusGraph(
 \item{limits}{either \code{NULL} or a vector of length two passed to the
 arguments \code{xlim} and \code{ylim} of \code{\link[graphics]{plot}};
 if \code{NULL}, automatic limits are calculated}
+
+\item{circles}{Boolean, whether to plot the original sites as circles with
+the given radii}
 
 \item{colors}{a character string controlling the colors of the sites;
 either \code{"distinct"} for random distinct colors, \code{"random"} for
