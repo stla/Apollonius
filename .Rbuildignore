@@ -7,3 +7,4 @@
 ^src/\.gitattributes$
 ^src/\.gitignore$
 ^src/compile_flags\.txt$
+^Rplot\.png$
