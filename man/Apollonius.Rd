@@ -4,7 +4,7 @@
 \alias{Apollonius}
 \title{Apollonius diagram and Apollonius graph}
 \usage{
-Apollonius(sites, radii, t0 = 2, tmax = 10, nsegs = 100L, nrays = 300L)
+Apollonius(sites, radii, tmax = 30, nsegs = 100L, nrays = 300L)
 }
 \arguments{
 \item{sites}{the 2D points, a numeric matrix with two columns (one point
@@ -12,9 +12,6 @@ per row)}
 
 \item{radii}{the weights, a numeric vector of length equal to the number of
 points (i.e. the number of rows of \code{sites})}
-
-\item{t0}{a positive parameter to increase in case if some infinite edges
-of the Apollonius graph are in the wrong direction}
 
 \item{tmax}{a positive number passed to \code{\link[gyro]{gyroray}},
 controlling the length of the infinite edges (i.e. the hyperbolic rays)

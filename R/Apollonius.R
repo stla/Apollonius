@@ -8,8 +8,6 @@
 #'   per row)
 #' @param radii the weights, a numeric vector of length equal to the number of
 #'   points (i.e. the number of rows of \code{sites})
-#' @param t0 a positive parameter to increase in case if some infinite edges
-#'   of the Apollonius graph are in the wrong direction
 #' @param tmax a positive number passed to \code{\link[gyro]{gyroray}},
 #'   controlling the length of the infinite edges (i.e. the hyperbolic rays)
 #'   of the Apollonius graph
@@ -47,7 +45,7 @@
 #' plotApolloniusGraph(apo, xlab = "x", ylab = "y")
 #' par(opar)
 Apollonius <- function(
-    sites, radii, t0 = 2, tmax = 10, nsegs = 100L, nrays = 300L
+    sites, radii, tmax = 30, nsegs = 100L, nrays = 300L
 ) {
   stopifnot(
     is.numeric(sites), is.matrix(sites), ncol(sites) == 2L, nrow(sites) >= 3L
@@ -126,14 +124,24 @@ Apollonius <- function(
         s <- exp(ur[["root"]])
       }
       if(infinite) {
-        P_is_up <- P1[1L]*P[1L] + P1[2L]*P[2L] > P1[3L]
-        if(rA == rB) {
-          X <- P2 + t0 * (P - P2)
+        # P_is_up <- P1[1L]*P[1L] + P1[2L]*P[2L] > P1[3L]
+        # if(rA == rB) {
+        #   X <- P2 + t0 * (P - P2)
+        # } else {
+        #   X <- ctr + gyroABt(P2-ctr, P-ctr, t = t0, s = s)
+        # }
+        # X_is_up <- P1[1L]*X[1L] + P1[2L]*X[2L] > P1[3L]
+        # reverse <- P_is_up != X_is_up
+        a <- P1[1L]
+        b <- P1[2L]
+        c <- P1[3L]
+        cP <- a*P[1L] + b*P[2L]
+        cP2 <- a*P2[1L] + b*P2[2L]
+        if(cP > c) {
+          reverse <- cP2 > cP
         } else {
-          X <- ctr + gyroABt(P2-ctr, P-ctr, t = t0, s = s)
+          reverse <- cP2 < cP
         }
-        X_is_up <- P1[1L]*X[1L] + P1[2L]*X[2L] > P1[3L]
-        reverse <- P_is_up != X_is_up
         if(rA == rB) {
           hsegments[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmax, n = nrays)
         } else {

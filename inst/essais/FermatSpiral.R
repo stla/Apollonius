@@ -1,12 +1,12 @@
 library(Apollonius)
 
-theta <- seq(0, 25, length.out = 30L)
+theta <- seq(0, 30, length.out = 30L)
 x <- sqrt(theta) * cos(theta)
 y <- sqrt(theta) * sin(theta)
 sites <- cbind(x, y)
 radii <- seq(1, 4, length.out = 30L)
 
-apo <- Apollonius(sites, radii, t0 = 15)
+apo <- Apollonius(sites, radii)
 
 opar <- par(mar = c(2, 2, 1, 1))
 plotApolloniusGraph(apo, circles = FALSE, color = "random")
@@ -14,7 +14,7 @@ par(opar)
 
 fplot <- function(rmax) {
   radii <- seq(1, rmax, length.out = 30L)
-  apo <- Apollonius(sites, radii, t0 = 20, tmax = 80)
+  apo <- Apollonius(sites, radii, tmax = 80)
   opar <- par(mar = c(2, 2, 3, 1))
   plotApolloniusGraph(apo, circles = FALSE, color = "red")
   par(opar)

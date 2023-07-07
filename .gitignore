@@ -60,3 +60,4 @@ src/Makevars
 # other
 inst/trash/
 Rplot.png
+x.svg
