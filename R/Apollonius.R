@@ -24,7 +24,7 @@
 #'   and the edges of the Apollonius graph.
 #' @export
 #'
-#' @importFrom gyro gyrosegment gyroray gyroABt
+#' @importFrom gyro gyromidpoint gyrosegment gyroray gyroABt
 #' @importFrom abind abind
 #'
 #' @examples
