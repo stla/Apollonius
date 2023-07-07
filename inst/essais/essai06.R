@@ -81,7 +81,7 @@ Apollonius <- function(sites, radii) {
         u <- (B-A) / AB
         P <- A + (rA + (AB - (rA + rB))/2) * u
       } else {
-        P <- P1[1:2]
+        P <- P1[c(1L, 2L)]
       }
       f <- function(log_s) {
         d <- ctr + gyromidpoint(P-ctr, P2-ctr, exp(log_s))
@@ -90,9 +90,9 @@ Apollonius <- function(sites, radii) {
       ur <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
       s <- exp(ur$root)
       if(infinite) {
-        P_is_up <- P1[1]*P[1] + P1[2]*P[2] > P1[3]
+        P_is_up <- P1[1L]*P[1L] + P1[2L]*P[2L] > P1[3L]
         X <- ctr + gyroABt(P2-ctr, P-ctr, t = 2, s = s)
-        X_is_up <- P1[1]*X[1] + P1[2]*X[2] > P1[3]
+        X_is_up <- P1[1L]*X[1L] + P1[2L]*X[2L] > P1[3L]
         reverse <- P_is_up != X_is_up
         hsegments[[h]] <-
           t(ctr + t(gyroray(P2-ctr, P-ctr, s = s, AtoB = !reverse)))
