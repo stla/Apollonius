@@ -183,7 +183,7 @@ gifski(
   png_files = c(pngs, rev(pngs)),
   gif_file = "agraph03.gif",
   width = 512,
-  height = 512,
+  height = 256,
   delay = 1/8
 )
 file.remove(pngs)
