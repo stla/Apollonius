@@ -9,6 +9,10 @@ Roughly speaking, this is the Voronoï diagram of a series of weighted points,
 that can be seen as circles (whose radii are the weights). When all the 
 weights are equal, this is the ordinary Voronoï diagram.
 
+Some documentation can be found on the 
+[CGAL website](https://doc.cgal.org/latest/Apollonius_graph_2/index.html#Chapter_2D_Apollonius_Graphs) 
+and in [this folder](inst/documents). 
+
 
 ![](https://raw.githubusercontent.com/stla/Apollonius/main/inst/screenshots/agraph03.gif)
 
