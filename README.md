@@ -4,8 +4,15 @@
 
 ___
 
+An Apollonius graph is also known as an *additively weighted Voronoï diagram*. 
+Roughly speaking, this is the Voronoï diagram of a series of weighted points, 
+that can be seen as circles (whose radii are the weights). When all the 
+weights are equal, this is the ordinary Voronoï diagram.
+
 
 ![](https://raw.githubusercontent.com/stla/Apollonius/main/inst/screenshots/agraph03.gif)
+
+![](https://raw.githubusercontent.com/stla/Apollonius/main/inst/screenshots/enclosedSquare.gif)
 
 ___
 
