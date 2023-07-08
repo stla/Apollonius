@@ -391,7 +391,7 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   int nfvertices = ag.number_of_vertices();
 
   if(nfvertices < nsites) {
-    Rcpp::warning("Some vertices have been destroyed.");
+    Msg("Warning: Some vertices have been destroyed.");
     std::string msg =
       "Number of remaining vertices: " + std::to_string(nfvertices);
     Message(msg);
