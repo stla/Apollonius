@@ -161,6 +161,7 @@ Apollonius <- function(
       h <- h + 1L
     }
   }
+  #
   wsites           <- cbind(sites, radii)
   colnames(wsites) <- c("x", "y", "weight")
   dsites <- duals[is.na(duals[, 3L]), ]
