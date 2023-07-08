@@ -86,7 +86,7 @@ int crash() {
       if(ag.is_infinite(f->neighbor(i))) {
         Rcpp::Rcout << "face neighbor is infinite\n";
       } else {
-        Rcpp::Rcout << "face neighbor is finite and its id is " 
+        Rcpp::Rcout << "face neighbor is finite and its id is "
                     << f->neighbor(i)->info() << "\n";
       }
     }
@@ -365,6 +365,14 @@ Rcpp::List test2(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii){
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+void Message(const std::string& msg) {
+  SEXP rmsg = Rcpp::wrap(msg);
+  Rcpp::message(rmsg);
+}
+
+
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
 // [[Rcpp::export]]
@@ -377,9 +385,31 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   for(int i = 0; i < nsites; i++) {
     Point2 p(sites(i, 0), sites(i, 1));
     Site2 s(p, radii(i));
-    ApolloniusGraph::Vertex_handle v = ag.insert(s);
-    v->info() = i + 1;
+    ag.insert(s);
   }
+
+  int nfvertices = ag.number_of_vertices();
+
+  if(nfvertices < nsites) {
+    Rcpp::warning("Some vertices have been destroyed.");
+    std::string msg =
+      "Number of remaining vertices: " + std::to_string(nfvertices);
+    Message(msg);
+  }
+
+  int n_all_vertices = 0;
+  int vcounter = 1;
+  for(auto v = ag.all_vertices_begin(); v != ag.all_vertices_end(); v++) {
+    ApolloniusGraph::Vertex_handle vh(v);
+    if(!ag.is_infinite(vh)) {
+      vh->info() = vcounter++;
+    }
+    n_all_vertices++;
+  }
+  std::string msg =
+    "Total number of vertices, including the infinite ones: " +
+      std::to_string(n_all_vertices);
+  Message(msg);
 
   // validate the Apollonius graph
   if(!ag.is_valid(true, 1)) {
