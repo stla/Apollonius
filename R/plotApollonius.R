@@ -43,7 +43,9 @@
 #' radii <- c(1, 1.5, 1.25, 2, 1.75, 0.5, 0.4, 0.6, 0.7, 0.3)
 #' apo <- Apollonius(sites, radii)
 #' opar <- par(mar = c(3, 3, 1, 1))
-#' plotApolloniusGraph(apo, colors = "random", xlab = NA, ylab = NA)
+#' plotApolloniusGraph(
+#'   apo, fill = FALSE, colors = "random", xlab = NA, ylab = NA
+#' )
 #' par(opar)
 plotApolloniusGraph <- function(
     apo, limits = NULL, circles = TRUE, fill = TRUE,

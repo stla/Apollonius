@@ -62,8 +62,7 @@ Apollonius <- function(
   if(anyNA(radii)) {
     stop("Found missing value(s) in `radii`.")
   }
-  # stopifnot(t0 > 1)
-  stopifnot(tmax > 1)
+  stopifnot(is.numeric(tmax), tmax > 1)
   #
   stuff <- ApolloniusCpp(sites, radii)
   neighbors <- stuff[["neighbors"]]
