@@ -11,6 +11,16 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// crash
+int crash();
+RcppExport SEXP _Apollonius_crash() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(crash());
+    return rcpp_result_gen;
+END_RCPP
+}
 // test
 Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii);
 RcppExport SEXP _Apollonius_test(SEXP sitesSEXP, SEXP radiiSEXP) {
@@ -49,6 +59,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_Apollonius_crash", (DL_FUNC) &_Apollonius_crash, 0},
     {"_Apollonius_test", (DL_FUNC) &_Apollonius_test, 2},
     {"_Apollonius_test2", (DL_FUNC) &_Apollonius_test2, 2},
     {"_Apollonius_ApolloniusCpp", (DL_FUNC) &_Apollonius_ApolloniusCpp, 2},
