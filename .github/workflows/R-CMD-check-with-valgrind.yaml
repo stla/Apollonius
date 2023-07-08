@@ -24,7 +24,7 @@ jobs:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
           sudo apt-get install --yes valgrind
-          
+
       - name: Install mpfr
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
@@ -41,6 +41,11 @@ jobs:
         with:
           use-public-rspm: true
 
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
       - name: Install remotes
         run: |
           Rscript -e "install.packages('remotes', repos='https://ftp.belnet.be/mirror/CRAN')"
@@ -48,10 +53,5 @@ jobs:
       - name: Install gyro from Github
         run: |
           Rscript -e "remotes::install_github('stla/gyro')"
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
 
       - uses: r-lib/actions/check-r-package@v2

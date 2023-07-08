@@ -35,6 +35,9 @@ Computation of the Apollonius diagram and the Apollonius graph
   Apollonius diagram. It is also called the additively weighted Voronoï
   diagram.
 }
+\details{
+See the \href{https://doc.cgal.org/latest/Apollonius_graph_2/index.html#Chapter_2D_Apollonius_Graphs}{CGAL documentation}.
+}
 \examples{
 # CRASH ####
 library(Apollonius)

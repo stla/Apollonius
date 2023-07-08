@@ -9,3 +9,4 @@
 ^src/compile_flags\.txt$
 ^Rplot\.png$
 ^inst/trash$
+^\.github$

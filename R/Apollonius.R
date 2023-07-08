@@ -22,6 +22,10 @@
 #'   and the edges of the Apollonius graph.
 #' @export
 #'
+#' @details
+#' See the \href{https://doc.cgal.org/latest/Apollonius_graph_2/index.html#Chapter_2D_Apollonius_Graphs}{CGAL documentation}.
+#'
+#'
 #' @importFrom gyro gyromidpoint gyrosegment gyroray gyroABt
 #' @importFrom abind abind
 #'
