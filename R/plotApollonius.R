@@ -9,6 +9,8 @@
 #'   the given radii
 #' @param fill Boolean, whether to fill the circles if \code{circles=TRUE}
 #'   or to plot only their border
+#' @param centers when \code{circles=TRUE} and \code{fill=FALSE}, whether to
+#'   plot the centers of the circles
 #' @param colors a character string controlling the colors of the sites;
 #'   either \code{"distinct"} for random distinct colors, \code{"random"} for
 #'   random colors controlled by the arguments \code{hue} and
@@ -48,7 +50,7 @@
 #' )
 #' par(opar)
 plotApolloniusGraph <- function(
-    apo, limits = NULL, circles = TRUE, fill = TRUE,
+    apo, limits = NULL, circles = TRUE, fill = TRUE, centers = TRUE,
     colors = "distinct", hue = "random", luminosity = "dark", ...
 ) {
   sites  <- apo[["diagram"]][["sites"]]
@@ -82,6 +84,13 @@ plotApolloniusGraph <- function(
         sites[i, "x"], sites[i, "y"], radius = radii[i],
         border = borders[i], col = cols[i], lwd = 2
       )
+    }
+    if(!fill && centers) {
+      for(i in 1L:nsites) {
+        points(
+          sites[i, "x"], sites[i, "y"], pch = 19L, col = clrs[i]
+        )
+      }
     }
   } else {
     for(i in 1L:nsites) {
