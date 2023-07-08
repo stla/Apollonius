@@ -89,16 +89,16 @@ Apollonius <- function(
   commonVertices <-
     abind(stuff[["cvertex1"]], stuff[["cvertex2"]], along = 3L)
   #
-  dpoints <- stuff[["dpoints"]]
+  duals    <- stuff[["duals"]]
   vertices <- stuff[["vertices"]]
   #
   nedges <- sum(lengths(Neighs))
   edges  <- vector("list", nedges)
-  type   <- character(nedges)
+  type   <- character(nedges) # store the type segment or ray
   h <- 1L
-  for(i in 1L:nrow(dpoints)) {
-    P1 <- dpoints[i, ]
-    infinite <- !is.na(P1[3L])
+  for(i in 1L:nrow(duals)) {
+    P1 <- duals[i, ] # it's a point or a line
+    infinite <- !is.na(P1[3L]) # it's a line
     Neighs_i <- Neighs[[i]]
     vert_i <- vertices[[i]]
     for(k in seq_along(Neighs_i)) {
@@ -108,17 +108,20 @@ Apollonius <- function(
       B  <- vert_i[vs[2L], 1L:2L]
       rB <- vert_i[vs[2L], 3L]
       ctr <- (A + B)/2
-      P2 <- dpoints[neighbors[i, Neighs_i[k]], c(1L, 2L)]
+      P2 <- duals[neighbors[i, Neighs_i[k]], c(1L, 2L)]
       if(infinite) {
+        # we take a point P on the hyperbolic ray, different from P2
         type[h] <- "rays"
         AB <- sqrt(c(crossprod(B-A)))
         u <- (B-A) / AB
         P <- A + (rA + (AB - (rA + rB))/2) * u
       } else {
+        # we take a point P on the hyperbolic segment, different from P2
         type[h] <- "segments"
         P <- P1[c(1L, 2L)]
       }
       if(rA != rB) {
+        # we solve an equation to find the gyrocurvature s
         f <- function(log_s) {
           d <- ctr + gyromidpoint(P-ctr, P2-ctr, exp(log_s))
           sqrt(c(crossprod(d-A))) - sqrt(c(crossprod(d-B))) - (rA - rB)
@@ -130,10 +133,10 @@ Apollonius <- function(
         # P1 = (a, b, c) stores the parameters of the line ax+by+c=0
         a <- P1[1L]
         b <- P1[2L]
-        c <- -P1[3L]
-        cP  <- a*P[1L]  + b*P[2L]
-        cP2 <- a*P2[1L] + b*P2[2L]
-        if(cP < c) {
+        c <- P1[3L]
+        cP  <- a*P[1L]  + b*P[2L]  + c
+        cP2 <- a*P2[1L] + b*P2[2L] + c
+        if(cP < 0) {
           reverse <- cP2 > cP
         } else {
           reverse <- cP2 < cP
@@ -158,9 +161,9 @@ Apollonius <- function(
       h <- h + 1L
     }
   }
-  wsites <- cbind(sites, radii)
+  wsites           <- cbind(sites, radii)
   colnames(wsites) <- c("x", "y", "weight")
-  dsites <- dpoints[is.na(dpoints[, 3L]), ]
+  dsites <- duals[is.na(duals[, 3L]), ]
   list(
     "diagram" = list("sites" = wsites, "faces" = stuff[["faces"]]),
     "graph"   = list("sites" = dsites, "edges" = split(edges, type))

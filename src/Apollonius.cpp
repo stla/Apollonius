@@ -362,6 +362,6 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
     Rcpp::Named("neighbors") = Rcpp::transpose(Neighbors),
     Rcpp::Named("cvertex1")  = CommonVertex1,
     Rcpp::Named("cvertex2")  = CommonVertex2,
-    Rcpp::Named("dpoints")   = Rcpp::transpose(Duals)
+    Rcpp::Named("duals")     = Rcpp::transpose(Duals)
   );
 }

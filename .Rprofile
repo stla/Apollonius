@@ -5,13 +5,13 @@ dllunload <- function(){
 }
 
 myinstall <- function() {
+  try(pkgload::unload("Apollonius"))
   if(rstudioapi::isAvailable()) {
     rstudioapi::restartSession(
       "devtools::install(quick = TRUE, keep_source = TRUE)"
     )
   } else {
-    try(dllunload())
-    try(pkgload::unload("Apollonius"))
+    #try(dllunload())
     devtools::install(quick = TRUE, keep_source = TRUE)
   }
 }
