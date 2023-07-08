@@ -25,13 +25,15 @@ dev.off()
 
 
 # anim
-R_ <- seq(0.5, 1.6, length.out = 20)
+R_ <- seq(0.5, 1.6, length.out = 40)
 for(i in seq_along(R_)) {
   radii <- c(rep(R_[i], 5), rep(1, 12))
   apo <- Apollonius(sites, radii, tmax = 80)
   svg("x.svg", width = 8, height = 8)
   opar <- par(mar = c(2, 2, 1, 1))
-  plotApolloniusGraph(apo, circles = TRUE, colors = "red", fill = FALSE)
+  plotApolloniusGraph(
+    apo, circles = TRUE, colors = "red", fill = FALSE, limits = c(-3, 3)
+  )
   par(opar)
   dev.off()
   rsvg::rsvg_png(
@@ -43,9 +45,9 @@ library(gifski)
 pngs <- Sys.glob("zzpic*.png")
 gifski(
   png_files = c(pngs, rev(pngs)),
-  gif_file = "enclosedSquare.gif",
+  gif_file = "enclosedSquare2.gif",
   width = 512,
   height = 512,
-  delay = 1/8
+  delay = 1/9
 )
 file.remove(pngs)
