@@ -23,3 +23,29 @@ plotApolloniusGraph(apo, circles = TRUE, color = "red", fill = FALSE,
 par(opar)
 dev.off()
 
+
+# anim
+R_ <- seq(0.5, 1.6, length.out = 20)
+for(i in seq_along(R_)) {
+  radii <- c(rep(R_[i], 5), rep(1, 12))
+  apo <- Apollonius(sites, radii, tmax = 80)
+  svg("x.svg", width = 8, height = 8)
+  opar <- par(mar = c(2, 2, 1, 1))
+  plotApolloniusGraph(apo, circles = TRUE, colors = "red", fill = FALSE)
+  par(opar)
+  dev.off()
+  rsvg::rsvg_png(
+    "x.svg", sprintf("zzpic%03d.png", i), width = 512, height = 512
+  )
+}
+
+library(gifski)
+pngs <- Sys.glob("zzpic*.png")
+gifski(
+  png_files = c(pngs, rev(pngs)),
+  gif_file = "enclosedSquare.gif",
+  width = 512,
+  height = 512,
+  delay = 1/8
+)
+file.remove(pngs)
