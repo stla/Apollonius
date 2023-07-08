@@ -160,12 +160,15 @@ Apollonius <- function(
         } else {
           reverse <- cP2 < cP
         }
+        PP2 <- sqrt(c(crossprod(P - P2)))
+        tmaxi <- tmax / min(1, PP2)
+        nrays2 <- floor(nrays / min(1, PP2))
         if(rA == rB) {
-          edges[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmax, n = nrays)
+          edges[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmaxi, n = nrays2)
         } else {
           edges[[h]] <-
             t(ctr + t(gyroray(
-              P2-ctr, P-ctr, s = s, OtoA = !reverse, tmax = tmax, n = nrays
+              P2-ctr, P-ctr, s = s, OtoA = !reverse, tmax = tmaxi, n = nrays2
             )))
         }
       } else {
