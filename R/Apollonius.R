@@ -62,7 +62,7 @@ Apollonius <- function(
   if(anyNA(radii)) {
     stop("Found missing value(s) in `radii`.")
   }
-  stopifnot(t0 > 1)
+  # stopifnot(t0 > 1)
   stopifnot(tmax > 1)
   #
   stuff <- ApolloniusCpp(sites, radii)
@@ -93,7 +93,9 @@ Apollonius <- function(
   dpoints <- stuff[["dpoints"]]
   vertices <- stuff[["vertices"]]
   #
-  hsegments <- vector("list", sum(lengths(Neighs)))
+  nedges <- sum(lengths(Neighs))
+  edges  <- vector("list", nedges)
+  type   <- character(nedges)
   h <- 1L
   for(i in 1L:nrow(dpoints)) {
     P1 <- dpoints[i, ]
@@ -109,10 +111,12 @@ Apollonius <- function(
       ctr <- (A + B)/2
       P2 <- dpoints[neighbors[i, Neighs_i[k]], c(1L, 2L)]
       if(infinite) {
+        type[h] <- "rays"
         AB <- sqrt(c(crossprod(B-A)))
         u <- (B-A) / AB
         P <- A + (rA + (AB - (rA + rB))/2) * u
       } else {
+        type[h] <- "segments"
         P <- P1[c(1L, 2L)]
       }
       if(rA != rB) {
@@ -120,22 +124,14 @@ Apollonius <- function(
           d <- ctr + gyromidpoint(P-ctr, P2-ctr, exp(log_s))
           sqrt(c(crossprod(d-A))) - sqrt(c(crossprod(d-B))) - (rA - rB)
         }
-        ur <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
-        s <- exp(ur[["root"]])
+        uroot <- uniroot(f, lower = -5, upper = 2, extendInt = "yes")
+        s <- exp(uroot[["root"]])
       }
       if(infinite) {
-        # P_is_up <- P1[1L]*P[1L] + P1[2L]*P[2L] > P1[3L]
-        # if(rA == rB) {
-        #   X <- P2 + t0 * (P - P2)
-        # } else {
-        #   X <- ctr + gyroABt(P2-ctr, P-ctr, t = t0, s = s)
-        # }
-        # X_is_up <- P1[1L]*X[1L] + P1[2L]*X[2L] > P1[3L]
-        # reverse <- P_is_up != X_is_up
         a <- P1[1L]
         b <- P1[2L]
         c <- P1[3L]
-        cP <- a*P[1L] + b*P[2L]
+        cP  <- a*P[1L]  + b*P[2L]
         cP2 <- a*P2[1L] + b*P2[2L]
         if(cP > c) {
           reverse <- cP2 > cP
@@ -143,18 +139,18 @@ Apollonius <- function(
           reverse <- cP2 < cP
         }
         if(rA == rB) {
-          hsegments[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmax, n = nrays)
+          edges[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmax, n = nrays)
         } else {
-          hsegments[[h]] <-
+          edges[[h]] <-
             t(ctr + t(gyroray(
               P2-ctr, P-ctr, s = s, OtoA = !reverse, tmax = tmax, n = nrays
             )))
         }
       } else {
         if(rA == rB) {
-          hsegments[[h]] <- segment(P, P2, n = nsegs)
+          edges[[h]] <- segment(P, P2, n = nsegs)
         } else {
-          hsegments[[h]] <- t(ctr + t(gyrosegment(
+          edges[[h]] <- t(ctr + t(gyrosegment(
             P-ctr, P2-ctr, s = s, n = nsegs
           )))
         }
@@ -167,6 +163,6 @@ Apollonius <- function(
   dsites <- dpoints[is.na(dpoints[, 3L]), ]
   list(
     "diagram" = list("sites" = wsites, "faces" = stuff[["faces"]]),
-    "graph"   = list("sites" = dsites, "edges" = hsegments)
+    "graph"   = list("sites" = dsites, "edges" = split(edges, type))
   )
 }

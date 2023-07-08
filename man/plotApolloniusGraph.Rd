@@ -8,6 +8,7 @@ plotApolloniusGraph(
   apo,
   limits = NULL,
   circles = TRUE,
+  fill = TRUE,
   colors = "distinct",
   hue = "random",
   luminosity = "dark",
@@ -23,6 +24,9 @@ if \code{NULL}, automatic limits are calculated}
 
 \item{circles}{Boolean, whether to plot the original sites as circles with
 the given radii}
+
+\item{fill}{Boolean, whether to fill the circles if \code{circles=TRUE}
+or to plot only their border}
 
 \item{colors}{a character string controlling the colors of the sites;
 either \code{"distinct"} for random distinct colors, \code{"random"} for

@@ -7,6 +7,8 @@
 #'   if \code{NULL}, automatic limits are calculated
 #' @param circles Boolean, whether to plot the original sites as circles with
 #'   the given radii
+#' @param fill Boolean, whether to fill the circles if \code{circles=TRUE}
+#'   or to plot only their border
 #' @param colors a character string controlling the colors of the sites;
 #'   either \code{"distinct"} for random distinct colors, \code{"random"} for
 #'   random colors controlled by the arguments \code{hue} and
@@ -44,7 +46,7 @@
 #' plotApolloniusGraph(apo, colors = "random", xlab = NA, ylab = NA)
 #' par(opar)
 plotApolloniusGraph <- function(
-    apo, limits = NULL, circles = TRUE,
+    apo, limits = NULL, circles = TRUE, fill = TRUE,
     colors = "distinct", hue = "random", luminosity = "dark", ...
 ) {
   sites  <- apo[["diagram"]][["sites"]]
@@ -52,6 +54,8 @@ plotApolloniusGraph <- function(
   radii  <- sites[, "weight"]
   dsites <- apo[["graph"]][["sites"]]
   edges  <- apo[["graph"]][["edges"]]
+  hsegments <- edges[["segments"]]
+  hrays     <- edges[["rays"]]
   #
   if(colors == "distinct") {
     clrs <- distinctColorPalette(nsites)
@@ -69,22 +73,27 @@ plotApolloniusGraph <- function(
   #
   plot(NULL, xlim = limits, ylim = limits, asp = 1, ...)
   if(circles) {
+    borders <- if(fill) NA else clrs
+    cols    <- if(fill) clrs else NA
     for(i in 1L:nsites) {
       draw.circle(
         sites[i, "x"], sites[i, "y"], radius = radii[i],
-        border = clrs[i], col = clrs[i]
+        border = borders[i], col = cols[i], lwd = 2
       )
     }
   } else {
     for(i in 1L:nsites) {
       points(
-        sites[i, "x"], sites[i, "y"], pch = 19, col = clrs[i]
+        sites[i, "x"], sites[i, "y"], pch = 19L, col = clrs[i]
       )
     }
   }
   points(dsites, pch = 19)
-  for(i in 1L:length(edges)) {
-    lines(edges[[i]], col="black", lwd = 2)
+  for(i in seq_along(hsegments)) {
+    lines(hsegments[[i]], col="black", lwd = 2)
+  }
+  for(i in seq_along(hrays)) {
+    lines(hrays[[i]], col="black", lwd = 2)
   }
   invisible()
 }
