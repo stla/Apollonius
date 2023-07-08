@@ -21,8 +21,8 @@ typedef CGAL::Apollonius_graph_2<Traits, Tds>                     ApolloniusGrap
 typedef ApolloniusGraph::Site_2                                   Site2;
 typedef Traits::Line_2                                            Line2;
 typedef Traits::Object_2                                          Object2;
-typedef ApolloniusGraph::Triangulation_data_structure       Tds;
-typedef Tds::Face_handle                        Face_handle;
+typedef ApolloniusGraph::Triangulation_data_structure             Tds;
+typedef Tds::Face_handle                                          Face_handle;
 
 // [[Rcpp::export]]
 Rcpp::List test(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii){
@@ -261,6 +261,7 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
 
   const int nsites = sites.nrow();
 
+  // make the Apollonius graph
   ApolloniusGraph ag;
   for(int i = 0; i < nsites; i++) {
     Point2 p(sites(i, 0), sites(i, 1));
@@ -273,6 +274,7 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
     Rcpp::stop("The Apollonius graph is not valid.");
   }
 
+  // assign an id to each face
   int n = 1;
   for(auto f = ag.all_faces_begin(); f != ag.all_faces_end(); f++) {
     f->info() = n++;
@@ -281,10 +283,10 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
   const int nfaces = n - 1;
 
   Rcpp::IntegerMatrix Faces(3, nfaces);
-  Rcpp::IntegerMatrix Neighbors(nfaces, 3);
+  Rcpp::IntegerMatrix Neighbors(3, nfaces);
   Rcpp::IntegerMatrix CommonVertex1(nfaces, 3);
   Rcpp::IntegerMatrix CommonVertex2(nfaces, 3);
-  Rcpp::NumericMatrix DualPoints(nfaces, 3);
+  Rcpp::NumericMatrix Duals(3, nfaces);
   Rcpp::List          Vertices(nfaces);
 
   int fid = 0;
@@ -299,11 +301,11 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
     for(int i = 0; i < 3; i++) {
       Site2 site = f->vertex(i)->site();
       Point2 pt  = site.point();
-      VS(i, 0) = pt.x();
-      VS(i, 1) = pt.y();
-      VS(i, 2) = site.weight();
+      VS(0, i) = pt.x();
+      VS(1, i) = pt.y();
+      VS(2, i) = site.weight();
     }
-    Vertices(fid) = VS;
+    Vertices(fid) = Rcpp::transpose(VS);
 
     Rcpp::IntegerVector neighbors(3);
     for(int i = 0; i < 3; i++) {
@@ -313,7 +315,7 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
         neighbors(i) = f->neighbor(i)->info();
       }
     }
-    Neighbors(fid, Rcpp::_) = neighbors;
+    Neighbors(Rcpp::_, fid) = neighbors;
 
     for(int j = 0; j < 3; j++) {
       if(!ag.is_infinite(f->neighbor(j))) {
@@ -329,30 +331,37 @@ Rcpp::List ApolloniusCpp(Rcpp::NumericMatrix sites, Rcpp::NumericVector radii) {
       }
     }
 
+    // face dual
     Face_handle fh(f);
     Object2 obj = ag.dual(fh);
     Traits traits = ag.geom_traits();
     Traits::Assign_2 assgn = traits.assign_2_object();
     Site2 site;
     Line2 line;
+    Rcpp::NumericVector Dual(3);
     if(assgn(site, obj)) {
+      // the dual is a site; we store its point and we assign NA to
+      // the third element
       Point2 pt  = site.point();
-      DualPoints(fid, 0) = pt.x();
-      DualPoints(fid, 1) = pt.y();
-      DualPoints(fid, 2) = Rcpp::NumericVector::get_na();
+      Dual(0) = pt.x();
+      Dual(1) = pt.y();
+      Dual(2) = Rcpp::NumericVector::get_na();
     } else if(assgn(line, obj)) {
-      DualPoints(fid, 0) = line.a();
-      DualPoints(fid, 1) = line.b();
-      DualPoints(fid, 2) = line.c();
+      // the dual is a line; we store the three parameters of its
+      // equation  ax + by + c = 0
+      Dual(0) = line.a();
+      Dual(1) = line.b();
+      Dual(2) = line.c();
     }
-
-    fid++;
+    Duals(Rcpp::_, fid++) = Dual;
   }
 
-  return Rcpp::List::create(Rcpp::Named("faces")     = Faces,
-                            Rcpp::Named("vertices")  = Vertices,
-                            Rcpp::Named("neighbors") = Neighbors,
-                            Rcpp::Named("cvertex1")  = CommonVertex1,
-                            Rcpp::Named("cvertex2")  = CommonVertex2,
-                            Rcpp::Named("dpoints")   = DualPoints);
+  return Rcpp::List::create(
+    Rcpp::Named("faces")     = Faces,
+    Rcpp::Named("vertices")  = Vertices,
+    Rcpp::Named("neighbors") = Rcpp::transpose(Neighbors),
+    Rcpp::Named("cvertex1")  = CommonVertex1,
+    Rcpp::Named("cvertex2")  = CommonVertex2,
+    Rcpp::Named("dpoints")   = Rcpp::transpose(Duals)
+  );
 }

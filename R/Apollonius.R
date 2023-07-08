@@ -127,12 +127,13 @@ Apollonius <- function(
         s <- exp(uroot[["root"]])
       }
       if(infinite) {
+        # P1 = (a, b, c) stores the parameters of the line ax+by+c=0
         a <- P1[1L]
         b <- P1[2L]
-        c <- P1[3L]
+        c <- -P1[3L]
         cP  <- a*P[1L]  + b*P[2L]
         cP2 <- a*P2[1L] + b*P2[2L]
-        if(cP > c) {
+        if(cP < c) {
           reverse <- cP2 > cP
         } else {
           reverse <- cP2 < cP
