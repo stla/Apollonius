@@ -2,6 +2,10 @@ isBoolean <- function(x) {
   is.atomic(x) && is.logical(x) && length(x) == 1L && !is.na(x)
 }
 
+isString <- function(x) {
+  is.atomic(x) && is.character(x) && length(x) == 1L && !is.na(x)
+}
+
 isNumber <- function(x) {
   is.numeric(x) && length(x) == 1L && !is.na(x)
 }
@@ -9,6 +13,7 @@ isNumber <- function(x) {
 isPositiveNumber <- function(x) {
   isNumber(x) && x > 0
 }
+
 
 segment <- function(A, B, n) {
   t_ <- seq(0, 1, length.out = n)

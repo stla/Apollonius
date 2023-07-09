@@ -56,6 +56,7 @@ plotApolloniusGraph <- function(
   stopifnot(isBoolean(circles))
   stopifnot(isBoolean(fill))
   stopifnot(isBoolean(centers))
+  stopifnot(isString(colors))
   sites  <- apo[["diagram"]][["sites"]]
   nsites <- nrow(sites)
   radii  <- sites[, "weight"]
