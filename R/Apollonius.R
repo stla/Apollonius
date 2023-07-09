@@ -81,7 +81,7 @@ Apollonius <- function(
   if(anyNA(radii)) {
     stop("Found missing value(s) in `radii`.")
   }
-  stopifnot(is.numeric(tmax), tmax > 1)
+  stopifnot(isNumber(tmax), tmax > 1)
   #
   stuff <- ApolloniusCpp(sites, radii)
   neighbors <- stuff[["neighbors"]]
@@ -164,7 +164,7 @@ Apollonius <- function(
         tmaxi <- tmax / min(1, PP2)
         nrays2 <- floor(nrays / min(1, PP2))
         if(rA == rB) {
-          edges[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmaxi, n = nrays2)
+          edges[[h]] <- ray(P2, P, OtoA = !reverse, tmax = tmaxi, n = 2L)
         } else {
           edges[[h]] <-
             t(ctr + t(gyroray(
@@ -173,7 +173,7 @@ Apollonius <- function(
         }
       } else {
         if(rA == rB) {
-          edges[[h]] <- segment(P, P2, n = nsegs)
+          edges[[h]] <- segment(P, P2, n = 2L)
         } else {
           edges[[h]] <- t(ctr + t(gyrosegment(
             P-ctr, P2-ctr, s = s, n = nsegs
