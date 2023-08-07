@@ -10,3 +10,4 @@
 ^Rplot\.png$
 ^inst/trash$
 ^\.github$
+^cran-comments\.md$
