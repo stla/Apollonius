@@ -28,6 +28,7 @@
 #'
 #' @importFrom gyro gyromidpoint gyrosegment gyroray gyroABt
 #' @importFrom abind abind
+#' @importFrom stats uniroot
 #'
 #' @examples
 #' library(Apollonius)

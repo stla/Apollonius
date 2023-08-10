@@ -11,3 +11,6 @@
 ^inst/trash$
 ^\.github$
 ^cran-comments\.md$
+^inst/documents$
+^inst/essais$
+^inst/keep$
