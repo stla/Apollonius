@@ -10,7 +10,7 @@
 ^Rplot\.png$
 ^inst/trash$
 ^\.github$
-^cran-comments\.md$
-^inst/documents$
+^cran-comments\.md
 ^inst/essais$
 ^inst/keep$
+^CRAN-SUBMISSION$
