@@ -6,7 +6,7 @@ Authors@R:
 Description: Computation of the Apollonius diagram of given 2D points and
     its dual the Apollonius graph, also known as the additively weighted
     Voronoï diagram, and which is a generalization of the classical Voronoï 
-    diagram. For references, see the bibilography in the CGAL documentation 
+    diagram. For references, see the bibliography in the CGAL documentation 
     at <https://doc.cgal.org/latest/Apollonius_graph_2/citelist.html>.
 License: GPL-3
 URL: https://github.com/stla/Apollonius
