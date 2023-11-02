@@ -63,7 +63,7 @@
 #' circle <- cbind(2 * cos(angle_), 2 * sin(angle_))
 #' sites <- rbind(sites, circle)
 #' radii <- c(rep(2, 5), rep(1, 12))
-#' \donttest{apo <- Apollonius(sites, radii)}
+#' \dontrun{apo <- Apollonius(sites, radii)}
 Apollonius <- function(
     sites, radii, tmax = 30, nsegs = 100L, nrays = 300L
 ) {
