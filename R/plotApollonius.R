@@ -12,18 +12,20 @@
 #' @param centers when \code{circles=TRUE} and \code{fill=FALSE}, whether to
 #'   plot the centers of the circles
 #' @param colors a character string controlling the colors of the sites;
-#'   either \code{"distinct"} for random distinct colors, \code{"random"} for
-#'   random colors controlled by the arguments \code{hue} and
-#'   \code{luminosity}, or a color name or hex code
-#' @param hue,luminosity if \code{colors="random"}, these arguments are passed
-#'   to \code{\link[randomcoloR]{randomColor}}
+#'   \code{"random"} to get multiple colors with
+#'   \code{\link[colorsGen]{randomColor}}, \code{"distinct"} to get multiple
+#'   colors with \code{\link[Polychrome]{createPalette}}, or a color name or
+#'   a hexadecimal color code
+#' @param distinctArgs if \code{colors = "distinct"}, a list of arguments
+#'   passed to \code{\link[Polychrome]{createPalette}}
+#' @param randomArgs if \code{colors = "random"}, a list of arguments passed
+#'   to \code{\link[colorsGen]{randomColor}}
 #' @param ... arguments passed to \code{\link[graphics]{plot}}, such as
 #'   \code{xlab} and \code{ylab}
 #'
 #' @return No returned value, called for plotting.
 #' @export
 #'
-#' @importFrom randomcoloR distinctColorPalette randomColor
 #' @importFrom grDevices extendrange
 #' @importFrom graphics plot points lines
 #' @importFrom plotrix draw.circle
@@ -51,7 +53,9 @@
 #' par(opar)
 plotApolloniusGraph <- function(
     apo, limits = NULL, circles = TRUE, fill = TRUE, centers = TRUE,
-    colors = "distinct", hue = "random", luminosity = "dark", ...
+    colors = "distinct",
+    distinctArgs = list(seedcolors = c("#ff0000", "#00ff00", "#0000ff")),
+    randomArgs = list(hue = "random", luminosity = "dark"), ...
 ) {
   stopifnot(isBoolean(circles))
   stopifnot(isBoolean(fill))
@@ -66,9 +70,9 @@ plotApolloniusGraph <- function(
   hrays     <- edges[["rays"]]
   #
   if(colors == "distinct") {
-    clrs <- distinctColorPalette(nsites)
+    clrs <- distinctColors(nsites, distinctArgs)
   } else if(colors == "random") {
-    clrs <- randomColor(nsites, hue = hue, luminosity = luminosity)
+    clrs <- rcolors(nsites, randomArgs)
   } else {
     clrs <- rep(colors, nsites)
   }

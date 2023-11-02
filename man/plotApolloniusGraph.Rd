@@ -11,8 +11,8 @@ plotApolloniusGraph(
   fill = TRUE,
   centers = TRUE,
   colors = "distinct",
-  hue = "random",
-  luminosity = "dark",
+  distinctArgs = list(seedcolors = c("#ff0000", "#00ff00", "#0000ff")),
+  randomArgs = list(hue = "random", luminosity = "dark"),
   ...
 )
 }
@@ -33,12 +33,16 @@ or to plot only their border}
 plot the centers of the circles}
 
 \item{colors}{a character string controlling the colors of the sites;
-either \code{"distinct"} for random distinct colors, \code{"random"} for
-random colors controlled by the arguments \code{hue} and
-\code{luminosity}, or a color name or hex code}
+\code{"random"} to get multiple colors with
+\code{\link[colorsGen]{randomColor}}, \code{"distinct"} to get multiple
+colors with \code{\link[Polychrome]{createPalette}}, or a color name or
+a hexadecimal color code}
 
-\item{hue, luminosity}{if \code{colors="random"}, these arguments are passed
-to \code{\link[randomcoloR]{randomColor}}}
+\item{distinctArgs}{if \code{colors = "distinct"}, a list of arguments
+passed to \code{\link[Polychrome]{createPalette}}}
+
+\item{randomArgs}{if \code{colors = "random"}, a list of arguments passed
+to \code{\link[colorsGen]{randomColor}}}
 
 \item{...}{arguments passed to \code{\link[graphics]{plot}}, such as
 \code{xlab} and \code{ylab}}
