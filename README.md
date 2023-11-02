@@ -2,6 +2,10 @@
 
 *2D Apollonius Graphs*
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/stla/Apollonius/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stla/Apollonius/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 ___
 
 An Apollonius graph is also known as an *additively weighted Voronoï diagram*. 
